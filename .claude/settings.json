@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc:*)",
+      "Bash(ls:*)",
+      "mcp__cognee__search",
+      "Bash(git mv:*)",
+      "Bash(shellcheck:*)",
+      "Bash(chmod:*)",
+      "Bash(bash:*)",
+      "Bash(npx markdownlint:*)",
+      "Bash(grep:*)",
+      "Bash(git:*)",
+      "Bash(perl:*)",
+      "WebFetch(domain:localhost)",
+      "Bash(curl:*)",
+      "Skill(code-review)",
+      "Bash(make:*)",
+      "Bash(python3:*)",
+      "Bash(bats:*)",
+      "Bash(cat:*)",
+      "Bash(bash -n /Users/doublej/dev/mnemonic-agents-skills/install/scripts/02-install-global-agent-rules.sh; echo \"exit code: $?\")",
+      "Bash(xxd:*)",
+      "Bash(gh repo:*)"
+    ]
+  }
+}
