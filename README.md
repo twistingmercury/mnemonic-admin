@@ -1,0 +1,162 @@
+# mnemonic-admin
+
+> **Maturity Level**: Emerging — prototype, not production-ready; expect breaking changes
+> **Version**: v0.0.1
+
+---
+
+## Table of Contents
+
+- [Usage](#usage)
+- [How it works](#how-it-works)
+- [Key Considerations](#key-considerations)
+- [Development Considerations](#development-considerations)
+- [Versioning](#versioning)
+
+---
+
+## Usage
+
+mnemonic-admin is an internal web UI for the Mnemonic pattern library. It provides a search-first workspace for engineers to:
+
+- Browse patterns without entering a query
+- Run semantic search and refine results with lightweight filters
+- Inspect pattern metadata, content, chunk summaries, related patterns, and agent associations
+- Pivot between related patterns
+- Import a single Markdown pattern file through the browser
+
+The UI connects directly to the Mnemonic API at `http://localhost:8080/v1/api`. No authentication is required in phase 1.
+
+### Markdown Pattern Import
+
+To import a pattern, prepare a Markdown file with:
+
+- YAML frontmatter (with metadata such as domain, tags, agent association)
+- An `## Overview` section
+- At least one `[//]: pattern` decorator
+
+Use the import overlay in the UI to select and submit the file. The application validates the file locally before submitting it to the API.
+
+---
+
+## How it works
+
+mnemonic-admin is a client-side React application that:
+
+1. **Queries the Mnemonic API** for pattern metadata, content, and semantic search results
+2. **Renders a split-pane workspace** with a pattern list on the left and detail pane on the right
+3. **Handles API responses** using TanStack Query for caching, refetching, and state management
+4. **Parses Markdown files** locally and translates them into structured JSON for import
+5. **Manages workspace state** through React Router and component-level query hooks
+
+When you search for a pattern, the UI sends the search term to the API and displays results ranked by semantic similarity. Selecting a pattern loads its full detail, including related patterns and chunk summaries.
+
+---
+
+## Key Considerations
+
+### API Dependency
+
+The application requires the Mnemonic API to be running at `http://localhost:8080/v1/api`. Without it, the UI cannot function. For development, ensure the API is started before running the UI.
+
+### Client-Side Validation
+
+File import validation runs in the browser. The application checks that the Markdown file conforms to the required structure before submission. This reduces invalid submissions but does not replace server-side validation.
+
+### No Authentication
+
+Phase 1 assumes all users accessing the admin workspace are trusted. Authentication and authorization are out of scope and may be added in later phases.
+
+### Split-Pane Layout
+
+The primary workspace uses a fixed split-pane design. Users browse patterns on the left and view details on the right. This layout is optimized for search-driven exploration and pattern comparison.
+
+---
+
+## Development Considerations
+
+### Quick Start
+
+> **Note:** The frontend scaffold has not been built yet. The commands below reflect the intended setup once Cycle 1 of the implementation plan is complete.
+
+Ensure Node.js 18+ and Docker are installed.
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start the Mnemonic API on `localhost:8080` (if not already running)
+4. Start the development server: `npm run dev`
+5. Open the browser to the URL shown in the terminal (usually `http://localhost:5173`)
+
+The development server includes hot module reloading. Changes to component files, styles, and configuration files are reflected immediately.
+
+### Building & Running
+
+**Local development build:**
+```bash
+npm install
+npm run dev
+```
+
+**Production build:**
+```bash
+npm run build
+```
+
+This generates a static build in the `dist/` directory.
+
+**Docker-first build (canonical path):**
+```bash
+./build/build.sh
+```
+
+This builds the application inside a Docker container, ensuring consistency between local and CI environments. It is the authoritative build method for releases and CI/CD.
+
+### Testing
+
+The project uses three levels of testing:
+
+**Unit and component tests (Vitest + React Testing Library):**
+```bash
+npm run test
+```
+
+Tests focus on parser logic, API client behavior, and component interaction. Tests run in watch mode during development and once in CI.
+
+**End-to-end tests (Playwright):**
+```bash
+npm run e2e
+```
+
+E2E tests verify critical user flows: pattern search, selection, related-pattern pivoting, and the import workflow. These tests assume the Mnemonic API is running and reachable.
+
+### Stack
+
+- **React 19** — UI framework for components and state management
+- **TypeScript** — Static type checking for API types and payload translation
+- **Vite** — Fast local development server and production bundler
+- **React Router** — Client-side routing (one primary route in phase 1, extensible for future screens)
+- **TanStack Query** — Server state management, caching, and request orchestration
+- **Tailwind CSS** — Utility-first styling with responsive design
+- **Vitest** — Fast unit and component test runner
+- **React Testing Library** — User-centric component testing
+- **Playwright** — End-to-end testing for critical workflows
+
+For rationale and rejected alternatives, see `docs/adr/0001-frontend-stack.md`.
+
+### Versioning <a name="versioning"></a>
+
+This project follows [Semantic Versioning 2.0.0](https://semver.org/).
+
+Version is determined from git tags:
+
+```bash
+git describe --tags --always
+```
+
+---
+
+## Documentation
+
+- **Architecture decisions** — `docs/adr/0001-frontend-stack.md`
+- **UI design and interactions** — `docs/design/pattern-ui-screen-map.md`
+- **Implementation plan** — `docs/plans/phase-01/PRD.md`

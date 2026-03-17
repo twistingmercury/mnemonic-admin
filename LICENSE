@@ -1,0 +1,69 @@
+Mnemonic Community License 1.1
+
+Copyright (c) 2025-2026 Jeremy K. Johnson
+
+Permission is granted to any person or entity obtaining a copy of this software
+and associated documentation files (the "Software") to use, copy, modify, and
+distribute the Software, in source or object form, subject to the conditions
+below.
+
+1. No Commercial Hosted Service Use
+You may not, without prior written permission from the copyright holder:
+
+(a) provide the Software to any third party as a hosted, managed, or
+software-as-a-service offering; or
+
+(b) use the Software, in whole or in part, to develop, power, operate, or
+enable any commercial hosted, managed, or software-as-a-service product or
+service for third parties.
+
+2. Permitted Use
+Subject to Section 1, you may use the Software internally, including for
+commercial internal business purposes. You may modify the Software for internal
+use. You may distribute the Software, including modified versions, so long as
+such distribution does not grant rights beyond those provided by this license.
+
+3. Redistribution Conditions
+If you distribute the Software or any modified version of it:
+(a) you must include a copy of this license;
+(b) you must retain all copyright, license, and attribution notices; and
+(c) you must clearly state that you modified the Software, if you have done so.
+
+4. No Trademark Rights
+This license does not grant any right to use the name "Mnemonic", the author's
+name, or any trademarks, service marks, logos, or branding, except as necessary
+for reasonable and customary attribution.
+
+5. Patent Grant
+The copyright holder grants you a non-exclusive, worldwide, royalty-free patent
+license under patent claims that the copyright holder can license, solely to
+use, modify, distribute, and run the Software as permitted by this license.
+This patent license does not apply to modifications made by you or to any
+combinations with other software or hardware not provided by the copyright
+holder.
+
+6. Termination
+Any use of the Software that violates this license automatically terminates your
+rights under this license. If you cease the violation within 30 days after
+receiving notice from the copyright holder, your rights under this license are
+reinstated, unless this is a repeated violation.
+
+7. Reservation of Rights
+All rights not expressly granted under this license are reserved. In particular,
+all rights to offer the Software, or any service substantially derived from it,
+as a commercial hosted, managed, or software-as-a-service product are reserved
+by the copyright holder unless separately licensed in writing.
+
+8. Disclaimer
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+
+9. Limitation of Liability
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM,
+DAMAGES, OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT, OR OTHERWISE, ARISING
+FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+
+For commercial licensing, including rights to provide hosted or managed
+services using the Software, contact the copyright holder.
