@@ -142,7 +142,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: The app shows the split-pane workspace with a header and visible import action, and component tests pass.
 
-- [ ] **Cycle 6 - Create typed Mnemonic API models and client functions**: Add the phase-1 API access layer for browse, search, detail, chunks, and import.
+- [x] **Cycle 6 - Create typed Mnemonic API models and client functions**: Add the phase-1 API access layer for browse, search, detail, chunks, and import.
 - Agent: `react software engineer`
 - Files: `src/features/patterns/api/types.ts`, `src/features/patterns/api/client.ts`, `src/features/patterns/api/client.test.ts`
 - Steps:
