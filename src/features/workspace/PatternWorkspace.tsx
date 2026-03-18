@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { PatternSearchForm } from "../patterns/components/PatternSearchForm";
 import { PatternResultsList } from "../patterns/components/PatternResultsList";
 import {
@@ -17,9 +18,16 @@ export function PatternWorkspace() {
     useState<FilterState>(EMPTY_FILTERS);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showImport, setShowImport] = useState(false);
+  const queryClient = useQueryClient();
 
   function handleImportClick() {
     setShowImport(true);
+  }
+
+  function handleImportSuccess(patternId: string) {
+    queryClient.invalidateQueries({ queryKey: ["patterns"] });
+    setSelectedId(patternId);
+    setShowImport(false);
   }
 
   const leftPane = (
@@ -51,7 +59,10 @@ export function PatternWorkspace() {
         }
       />
       {showImport && (
-        <ImportPatternOverlay onClose={() => setShowImport(false)} />
+        <ImportPatternOverlay
+          onClose={() => setShowImport(false)}
+          onImportSuccess={handleImportSuccess}
+        />
       )}
     </>
   );

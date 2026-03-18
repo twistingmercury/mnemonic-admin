@@ -10,6 +10,7 @@ import type { ApiError, CreatePatternBody } from "../patterns/api/types";
 
 interface ImportPatternOverlayProps {
   onClose: () => void;
+  onImportSuccess?: (patternId: string) => void;
 }
 
 type SubmitState =
@@ -19,7 +20,10 @@ type SubmitState =
   | { status: "conflict" }
   | { status: "error"; message: string };
 
-export function ImportPatternOverlay({ onClose }: ImportPatternOverlayProps) {
+export function ImportPatternOverlay({
+  onClose,
+  onImportSuccess,
+}: ImportPatternOverlayProps) {
   const [parseError, setParseError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<
     ValidationError[] | null
@@ -143,7 +147,21 @@ export function ImportPatternOverlay({ onClose }: ImportPatternOverlayProps) {
             )}
             {submitState.status === "submitting" && <p>Submitting…</p>}
             {submitState.status === "success" && (
-              <p>Import successful: {submitState.patternId}</p>
+              <>
+                <p>Import successful: {submitState.patternId}</p>
+                <button type="button" onClick={onClose}>
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onImportSuccess?.(submitState.patternId);
+                    onClose();
+                  }}
+                >
+                  View Pattern
+                </button>
+              </>
             )}
             {submitState.status === "conflict" && (
               <p>A pattern with this name already exists.</p>
