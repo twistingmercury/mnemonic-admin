@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getPattern } from "../api/client";
+import { PatternMetadata } from "./PatternMetadata";
+import { PatternContent } from "./PatternContent";
 
 interface PatternDetailPaneProps {
   patternId: string | null;
@@ -24,6 +26,10 @@ export function PatternDetailPane({ patternId }: PatternDetailPaneProps) {
     return <div>Failed to load pattern</div>;
   }
 
+  if (!data) {
+    return null;
+  }
+
   return (
     <div
       style={{
@@ -33,16 +39,8 @@ export function PatternDetailPane({ patternId }: PatternDetailPaneProps) {
         overflow: "auto",
       }}
     >
-      <div>
-        <span style={{ fontWeight: "bold" }}>{data?.name}</span>
-      </div>
-      {data?.content && (
-        <div>
-          <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-            {data.content}
-          </pre>
-        </div>
-      )}
+      <PatternMetadata pattern={data} />
+      <PatternContent pattern={data} />
     </div>
   );
 }
