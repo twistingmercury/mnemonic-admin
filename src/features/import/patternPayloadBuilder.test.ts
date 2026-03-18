@@ -106,4 +106,28 @@ describe("buildPatternPayload", () => {
 
     expect(payload.content).toBe(specialBody);
   });
+
+  it("sets tags to an empty array when tags is an empty array", () => {
+    const payload = buildPatternPayload(
+      makeFile({ name: "n", description: "d", tags: [] }),
+    );
+
+    expect(payload.tags).toEqual([]);
+  });
+
+  it("sets agent_associations to an empty array when agents is an empty array", () => {
+    const payload = buildPatternPayload(
+      makeFile({ name: "n", description: "d", agents: [] }),
+    );
+
+    expect(payload.agent_associations).toEqual([]);
+  });
+
+  it("omits tags when tags is absent", () => {
+    const payload = buildPatternPayload(
+      makeFile({ name: "n", description: "d" }),
+    );
+
+    expect("tags" in payload).toBe(false);
+  });
 });

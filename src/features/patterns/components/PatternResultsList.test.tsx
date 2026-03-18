@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { PatternResultsList } from "./PatternResultsList";
 import type { PaginatedResponse, PatternListItem } from "../api/types";
@@ -103,6 +104,51 @@ describe("PatternResultsList", () => {
     await waitFor(() => {
       expect(screen.getByText("Failed to load patterns")).toBeInTheDocument();
     });
+  });
+
+  it("calls onSelect with the pattern id when a row is clicked", async () => {
+    mockListPatterns.mockResolvedValue(makeResponse([MOCK_PATTERN]));
+    const handleSelect = vi.fn();
+    const user = userEvent.setup();
+
+    renderWithQuery(<PatternResultsList onSelect={handleSelect} />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Test Pattern Alpha")).toBeInTheDocument();
+    });
+
+    await user.click(
+      screen.getByRole("button", { name: /Test Pattern Alpha/ }),
+    );
+
+    expect(handleSelect).toHaveBeenCalledOnce();
+    expect(handleSelect).toHaveBeenCalledWith("pattern-1");
+  });
+
+  it("marks the selected row with aria-pressed=true", async () => {
+    mockListPatterns.mockResolvedValue(makeResponse([MOCK_PATTERN]));
+
+    renderWithQuery(<PatternResultsList selectedId="pattern-1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Test Pattern Alpha")).toBeInTheDocument();
+    });
+
+    const row = screen.getByRole("button", { name: /Test Pattern Alpha/ });
+    expect(row).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("marks an unselected row with aria-pressed=false", async () => {
+    mockListPatterns.mockResolvedValue(makeResponse([MOCK_PATTERN]));
+
+    renderWithQuery(<PatternResultsList selectedId="other-id" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Test Pattern Alpha")).toBeInTheDocument();
+    });
+
+    const row = screen.getByRole("button", { name: /Test Pattern Alpha/ });
+    expect(row).toHaveAttribute("aria-pressed", "false");
   });
 
   describe("search mode", () => {

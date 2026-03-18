@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { WorkspaceHeader } from "./WorkspaceHeader";
 
 describe("WorkspaceHeader", () => {
@@ -15,5 +16,16 @@ describe("WorkspaceHeader", () => {
     expect(
       screen.getByRole("button", { name: "Import Pattern" }),
     ).toBeDefined();
+  });
+
+  it("calls onImportClick when the Import Pattern button is clicked", async () => {
+    const handleImportClick = vi.fn();
+    const user = userEvent.setup();
+
+    render(<WorkspaceHeader onImportClick={handleImportClick} />);
+
+    await user.click(screen.getByRole("button", { name: "Import Pattern" }));
+
+    expect(handleImportClick).toHaveBeenCalledOnce();
   });
 });

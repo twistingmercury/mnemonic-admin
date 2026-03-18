@@ -46,4 +46,11 @@ describe("PatternContent", () => {
     expect(screen.getByText(/line one/)).toBeInTheDocument();
     expect(screen.getByText(/line three/)).toBeInTheDocument();
   });
+
+  it("renders without throwing when content is an empty string", () => {
+    const { container } = render(
+      <PatternContent pattern={{ ...MOCK_PATTERN, content: "" }} />,
+    );
+    expect(container.querySelector("section")).not.toBeNull();
+  });
 });

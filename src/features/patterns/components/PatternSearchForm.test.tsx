@@ -93,4 +93,20 @@ describe("PatternSearchForm", () => {
 
     expect(handleSearch).toHaveBeenCalledWith("factory");
   });
+
+  it("calls onSearch with an empty string when submitting a whitespace-only query", async () => {
+    const handleSearch = vi.fn();
+    const user = userEvent.setup();
+
+    renderWithQuery(
+      <PatternSearchForm onSearch={handleSearch} activeQuery="" />,
+    );
+
+    const input = screen.getByRole("textbox", { name: /search patterns/i });
+    await user.type(input, "   ");
+    await user.click(screen.getByRole("button", { name: /search/i }));
+
+    expect(handleSearch).toHaveBeenCalledOnce();
+    expect(handleSearch).toHaveBeenCalledWith("");
+  });
 });

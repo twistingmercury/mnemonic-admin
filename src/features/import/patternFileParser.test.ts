@@ -121,4 +121,67 @@ describe("parsePatternFile", () => {
       "A description with spaces",
     );
   });
+
+  it("returns an empty frontmatter object when the frontmatter block is empty", () => {
+    const result = parsePatternFile("---\n---\n\nBody here.");
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.frontmatter).toEqual({});
+    expect(result.value.body).toBe("Body here.");
+  });
+
+  it("skips a frontmatter line that has no colon", () => {
+    const content = `---
+name: Valid Name
+not-a-key-value line without colon
+---
+
+Body.
+`;
+    const result = parsePatternFile(content);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.frontmatter["name"]).toBe("Valid Name");
+  });
+
+  it("returns an empty array for an inline sequence with no items", () => {
+    const content = `---
+name: No Tags
+tags: []
+---
+
+Body.
+`;
+    const result = parsePatternFile(content);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.frontmatter["tags"]).toEqual([]);
+  });
+
+  it("does not include block-sequence key when no items follow the key", () => {
+    // key: (empty rest) but next line is not a sequence item
+    const content = `---
+name: Normal Name
+extra:
+description: A description
+---
+
+Body.
+`;
+    const result = parsePatternFile(content);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    // "extra" had no sequence items following it, so it should not appear
+    expect("extra" in result.value.frontmatter).toBe(false);
+    // "description" should still be parsed
+    expect(result.value.frontmatter["description"]).toBe("A description");
+  });
+
+  it("preserves content after the closing delimiter when it does not start with a newline", () => {
+    const result = parsePatternFile("---\nname: X\n---body directly");
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    // body is everything after ---; trimStart removes leading whitespace but not other chars
+    expect(result.value.body).toContain("body directly");
+  });
 });

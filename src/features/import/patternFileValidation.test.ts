@@ -83,4 +83,45 @@ describe("validatePatternFile", () => {
     expect(fields.filter((f) => f === "body").length).toBeGreaterThanOrEqual(2);
     expect(result.errors.length).toBeGreaterThanOrEqual(3);
   });
+
+  it("returns an error when description is a whitespace-only string", () => {
+    const parsed = makeValid({
+      frontmatter: { name: "Valid Name", description: "   " },
+    });
+    const result = validatePatternFile(parsed);
+    expect(result.valid).toBe(false);
+    if (result.valid) return;
+    const fields = result.errors.map((e) => e.field);
+    expect(fields).toContain("description");
+  });
+
+  it("returns an error when name is provided as an array (not a string)", () => {
+    const parsed = makeValid();
+    parsed.frontmatter["name"] = ["array-value"];
+    const result = validatePatternFile(parsed);
+    expect(result.valid).toBe(false);
+    if (result.valid) return;
+    const fields = result.errors.map((e) => e.field);
+    expect(fields).toContain("name");
+  });
+
+  it("returns errors for both body checks when body is an empty string", () => {
+    const parsed = makeValid({ body: "" });
+    const result = validatePatternFile(parsed);
+    expect(result.valid).toBe(false);
+    if (result.valid) return;
+    const fields = result.errors.map((e) => e.field);
+    expect(fields.filter((f) => f === "body").length).toBe(2);
+  });
+
+  it("returns an error for missing description and passes name check when name is valid", () => {
+    const parsed = makeValid();
+    delete parsed.frontmatter["description"];
+    const result = validatePatternFile(parsed);
+    expect(result.valid).toBe(false);
+    if (result.valid) return;
+    const fields = result.errors.map((e) => e.field);
+    expect(fields).toContain("description");
+    expect(fields).not.toContain("name");
+  });
 });

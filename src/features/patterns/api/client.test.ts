@@ -137,6 +137,36 @@ describe("toApiError", () => {
       message: "Request failed with status 503",
     });
   });
+
+  it("produces a generic error when body has a status property that is not a number", () => {
+    const err = toApiError(400, { status: "400" });
+    expect(err).toEqual<ApiError>({
+      status: 400,
+      message: "Request failed with status 400",
+    });
+  });
+
+  it("produces a generic error when body is null", () => {
+    const err = toApiError(500, null);
+    expect(err).toEqual<ApiError>({
+      status: 500,
+      message: "Request failed with status 500",
+    });
+  });
+
+  it("uses empty string detail as-is (nullish coalescing does not skip empty strings)", () => {
+    const err = toApiError(418, {
+      status: 418,
+      detail: "",
+      title: "Some Title",
+    });
+    // ?? only skips null/undefined, not ""; so detail="" is used directly
+    expect(err).toEqual<ApiError>({
+      status: 418,
+      message: "",
+      type: undefined,
+    });
+  });
 });
 
 // ─── listPatterns ─────────────────────────────────────────────────────────────
@@ -161,6 +191,27 @@ describe("listPatterns", () => {
     expect(url).toContain("page=2");
     expect(url).toContain("page_size=10");
     expect(url).toContain("language=go");
+  });
+
+  it("appends tags and domain filter params to the URL", async () => {
+    mockFetch(200, PAGINATED);
+    await listPatterns({ tags: "security", domain: "backend" });
+    const [url] = vi.mocked(globalThis.fetch).mock.calls[0] as [
+      string,
+      ...unknown[],
+    ];
+    expect(url).toContain("tags=security");
+    expect(url).toContain("domain=backend");
+  });
+
+  it("does not append a query string when called with no params", async () => {
+    mockFetch(200, PAGINATED);
+    await listPatterns();
+    const [url] = vi.mocked(globalThis.fetch).mock.calls[0] as [
+      string,
+      ...unknown[],
+    ];
+    expect(url).not.toContain("?");
   });
 
   it("throws ApiError on non-2xx response with problem detail", async () => {
@@ -291,6 +342,16 @@ describe("getPatternChunks", () => {
       message: "Server error",
     });
   });
+
+  it("URL-encodes the pattern id in the chunks path", async () => {
+    mockFetch(200, CHUNKS);
+    await getPatternChunks("id/with/slashes");
+    const [url] = vi.mocked(globalThis.fetch).mock.calls[0] as [
+      string,
+      ...unknown[],
+    ];
+    expect(url).toContain("id%2Fwith%2Fslashes");
+  });
 });
 
 // ─── createPattern ────────────────────────────────────────────────────────────
@@ -334,5 +395,16 @@ describe("createPattern", () => {
       status: 422,
       message: "name is required",
     });
+  });
+
+  it("sends the correct Content-Type header", async () => {
+    mockFetch(201, PATTERN_DETAIL);
+    await createPattern({ name: "N", description: "D", content: "C" });
+    const [, init] = vi.mocked(globalThis.fetch).mock.calls[0] as [
+      string,
+      RequestInit,
+    ];
+    const headers = init.headers as Record<string, string>;
+    expect(headers["Content-Type"]).toBe("application/json");
   });
 });
