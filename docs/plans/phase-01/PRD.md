@@ -208,7 +208,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: The detail pane shows the main pattern information and content with a structured UI, and component tests for metadata and content rendering pass.
 
-- [ ] **Cycle 12 - Add chunk summaries and agent association sections**: Complete the non-primary supporting sections in the detail pane.
+- [x] **Cycle 12 - Add chunk summaries and agent association sections**: Complete the non-primary supporting sections in the detail pane.
 - Agent: `react software engineer`
 - Files: `src/features/patterns/components/PatternDetailPane.tsx`, `src/features/patterns/components/PatternSupportSections.tsx`, `src/features/patterns/components/PatternSupportSections.test.tsx`
 - Steps:

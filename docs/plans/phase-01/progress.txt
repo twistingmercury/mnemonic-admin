@@ -324,3 +324,32 @@ Next cycle: Cycle 12 — Add chunk summaries and agent association sections
   (src/features/patterns/components/PatternDetailPane.tsx,
    src/features/patterns/components/PatternSupportSections.tsx,
    src/features/patterns/components/PatternSupportSections.test.tsx)
+
+---
+
+## Cycle 12 — Add chunk summaries and agent association sections
+Date: 2026-03-18
+
+Summary:
+- Created src/features/patterns/components/PatternSupportSections.tsx: pure
+  presentational component accepting chunks (ChunkSummary[]) and
+  agentAssociations (AgentAssociation[]). Renders chunk summaries as an ordered
+  list (index + summary text) and agent associations as an unordered list
+  (agent_name or agent_id + relevance). Both sections show an empty state
+  message when arrays are empty.
+- Updated src/features/patterns/components/PatternDetailPane.tsx: added a second
+  useQuery for getPatternChunks(patternId); passes chunks and agent_associations
+  as props to PatternSupportSections at the bottom of the detail pane.
+- Created src/features/patterns/components/PatternSupportSections.test.tsx: 7
+  tests covering chunk text, chunk index, chunks empty state, agent name render,
+  agent_id fallback, relevance render, and agents empty state.
+
+Verification passed:
+- npm run build — exit 0 (65 tests, bundle clean)
+- npm run test — 65/65 passed
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 13 — Implement related-pattern pivoting inside the detail pane
