@@ -288,3 +288,39 @@ Next cycle: Cycle 11 — Render the core pattern detail view
    src/features/patterns/components/PatternContent.tsx,
    src/features/patterns/components/PatternMetadata.test.tsx,
    src/features/patterns/components/PatternContent.test.tsx)
+
+---
+
+## Cycle 11 — Render the core pattern detail view
+Date: 2026-03-18
+
+Summary:
+- Created src/features/patterns/components/PatternMetadata.tsx: renders all
+  metadata fields in a <dl> grid — name, description, language, domain,
+  entity_type, version, enrichment status (Yes/No), tags, created_at, and
+  updated_at. Optional fields are omitted when absent.
+- Created src/features/patterns/components/PatternContent.tsx: renders the full
+  pattern content in a <section aria-label="Pattern content"> wrapping a <pre>
+  with whiteSpace: pre-wrap to preserve formatting.
+- Refactored src/features/patterns/components/PatternDetailPane.tsx: replaced
+  inline name/content rendering with <PatternMetadata> and <PatternContent>;
+  added a !data guard after loading/error guards.
+- Created src/features/patterns/components/PatternMetadata.test.tsx: 11 tests
+  covering each metadata field, enriched Yes/No, tags list, timestamps, and
+  optional fields absent when undefined.
+- Created src/features/patterns/components/PatternContent.test.tsx: 4 tests
+  covering content text, section element, accessible label, and multiline
+  content preservation.
+
+Verification passed:
+- npm run build — exit 0 (58 tests, bundle clean)
+- npm run test — 58/58 passed
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 12 — Add chunk summaries and agent association sections
+  (src/features/patterns/components/PatternDetailPane.tsx,
+   src/features/patterns/components/PatternSupportSections.tsx,
+   src/features/patterns/components/PatternSupportSections.test.tsx)

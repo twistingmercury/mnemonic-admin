@@ -197,7 +197,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: Clicking a result loads the selected pattern into the detail pane and preserves left-pane context, and component tests for selection behavior pass.
 
-- [ ] **Cycle 11 - Render the core pattern detail view**: Display metadata and content in a readable structure instead of raw API output.
+- [x] **Cycle 11 - Render the core pattern detail view**: Display metadata and content in a readable structure instead of raw API output.
 - Agent: `react software engineer`
 - Files: `src/features/patterns/components/PatternDetailPane.tsx`, `src/features/patterns/components/PatternMetadata.tsx`, `src/features/patterns/components/PatternContent.tsx`, `src/features/patterns/components/PatternMetadata.test.tsx`, `src/features/patterns/components/PatternContent.test.tsx`
 - Steps:
