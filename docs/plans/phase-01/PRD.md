@@ -230,7 +230,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: The user can pivot to a related pattern and remain in the same workspace context, and component tests for pivoting behavior pass.
 
-- [ ] **Cycle 14 - Build the import overlay shell and file picker**: Add the import entry flow without submission logic yet.
+- [x] **Cycle 14 - Build the import overlay shell and file picker**: Add the import entry flow without submission logic yet.
 - Agent: `react software engineer`
 - Files: `src/features/import/ImportPatternOverlay.tsx`, `src/features/workspace/PatternWorkspace.tsx`, `src/features/import/ImportPatternOverlay.test.tsx`
 - Steps:

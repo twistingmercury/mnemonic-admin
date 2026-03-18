@@ -381,3 +381,31 @@ Verification passed:
 - npm audit --audit-level=high — zero vulnerabilities
 
 Next cycle: Cycle 14 — Build the import overlay shell and file picker
+
+---
+
+## Cycle 14 — Build the import overlay shell and file picker
+Date: 2026-03-18
+
+Summary:
+- Created src/features/import/ImportPatternOverlay.tsx: fixed full-screen
+  backdrop overlay with centered dialog; "Import Pattern" heading; close button
+  wired to onClose prop; single-file input (accept=".md", aria-label="Select
+  Markdown file"); empty placeholder sections for validation feedback and import
+  outcome. Layout-only styles; no decorative styling.
+- Updated src/features/workspace/PatternWorkspace.tsx: added showImport state;
+  handleImportClick sets showImport(true); ImportPatternOverlay rendered as a
+  sibling to WorkspaceLayout when showImport is true.
+- Created src/features/import/ImportPatternOverlay.test.tsx: 5 tests covering
+  heading render, close button calls onClose, file input with accept=".md",
+  validation feedback placeholder present, import outcome placeholder present.
+
+Verification passed:
+- npm run build — exit 0 (72 tests, clean bundle)
+- npm run test — 72/72 passed (11 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 15 — Parse Markdown pattern files and extract frontmatter and body
