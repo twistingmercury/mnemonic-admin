@@ -72,8 +72,14 @@ Do not introduce host-only workflow assumptions as the primary build contract.
 - Prefer small, typed modules over large files.
 - Keep API access centralized.
 - Keep remote data behavior explicit and predictable.
-- Add or update tests for changed behavior when the cycle touches parser logic,
-  payload translation, API behavior, or user-visible flows.
+- Every cycle that produces or modifies source files under `src/` must include
+  tests for the behavior it introduces. Tests must pass before the cycle is
+  marked complete. Do not defer test writing to a later cycle.
+- Phase 1 UI is functional only. Apply only the layout styles needed to arrange
+  elements on the page (flex, grid, width, height, overflow, positioning). Do
+  not add decorative styling: no colors, no background fills, no styled borders,
+  no shadows, no typography choices beyond browser defaults. Black text on a
+  white background is the target aesthetic for this phase.
 - Do not add unrelated abstractions, state libraries, or framework changes.
 - Do not rewrite the approved architecture during implementation.
 
@@ -123,8 +129,8 @@ every cycle that produces or modifies source files under `src/`:
 1. `npx tsc --noEmit` — type check must pass with zero errors
 2. `npx eslint src/` — lint must pass with zero errors
 3. `npx prettier --check .` — formatting must be clean
-4. `npm run test` — all existing unit and component tests must pass
-   (skip this check only if no test files exist yet in the repository)
+4. `npm run test` — all unit and component tests must pass, including any new
+   tests introduced by the current cycle
 5. `npm audit --audit-level=high` — no high or critical vulnerabilities
 
 These baseline checks are in addition to, not instead of, the cycle’s declared
@@ -143,12 +149,24 @@ If any check fails:
 - rerun verification
 - do not mark the cycle complete until all checks pass
 
-### Step 6: Update project records
+### Step 6: Commit the changes
 
-After verification passes:
+After verification passes, stage and commit all files produced or modified by
+the cycle:
+
+- stage only the files listed in the cycle's `Files` field and any directly
+  necessary support files that the cycle required
+- use a concise commit message that names the cycle number and title
+- do not skip hooks or sign flags
+- if the commit fails, fix the issue and recommit before proceeding
+
+### Step 7: Update project records
+
+After the commit succeeds:
 
 - change the selected PRD cycle from `- [ ]` to `- [x]`
 - append a concise entry to `docs/plans/phase-01/progress.txt`
+- stage and commit the updated PRD and progress log as a follow-up commit
 
 Each progress entry should include:
 
@@ -158,7 +176,7 @@ Each progress entry should include:
 - verification performed
 - important follow-up notes, if any
 
-### Step 7: Report and stop
+### Step 8: Report and stop
 
 At the end of the loop:
 
