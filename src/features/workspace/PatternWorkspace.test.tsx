@@ -5,11 +5,39 @@ import { PatternWorkspace } from "./PatternWorkspace";
 
 // Mock all child components that make API calls
 vi.mock("../patterns/components/PatternResultsList", () => ({
-  PatternResultsList: () => <div data-testid="pattern-results-list" />,
+  PatternResultsList: ({
+    query,
+    selectedId,
+    onSelect,
+  }: {
+    query?: string;
+    selectedId?: string | null;
+    onSelect?: (id: string) => void;
+  }) => (
+    <div
+      data-testid="pattern-results-list"
+      data-query={query ?? ""}
+      data-selected-id={selectedId ?? ""}
+    >
+      <button onClick={() => onSelect?.("pattern-1")}>Select pattern-1</button>
+    </div>
+  ),
 }));
 
 vi.mock("../patterns/components/PatternDetailPane", () => ({
-  PatternDetailPane: () => <div data-testid="pattern-detail-pane" />,
+  PatternDetailPane: ({
+    patternId,
+    onSelectRelated,
+  }: {
+    patternId: string | null;
+    onSelectRelated?: (id: string) => void;
+  }) => (
+    <div data-testid="pattern-detail-pane" data-pattern-id={patternId ?? ""}>
+      <button onClick={() => onSelectRelated?.("related-1")}>
+        Pivot to related-1
+      </button>
+    </div>
+  ),
 }));
 
 vi.mock("../patterns/components/PatternFilters", () => ({
@@ -98,5 +126,76 @@ describe("PatternWorkspace — import success integration", () => {
     expect(screen.getByLabelText("Active query")).toHaveTextContent(
       "my search term",
     );
+  });
+});
+
+describe("PatternWorkspace — browse and search flows", () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = makeQueryClient();
+  });
+
+  it("renders results list in browse mode on initial load", () => {
+    renderWorkspace(queryClient);
+
+    const list = screen.getByTestId("pattern-results-list");
+    expect(list).toBeInTheDocument();
+    // On initial load the query prop is empty string (no active search)
+    expect(list).toHaveAttribute("data-query", "");
+  });
+
+  it("passes submitted query to results list after search submission", () => {
+    renderWorkspace(queryClient);
+
+    const searchInput = screen.getByRole("textbox", {
+      name: /search patterns/i,
+    });
+    fireEvent.change(searchInput, { target: { value: "authentication" } });
+    fireEvent.submit(searchInput.closest("form")!);
+
+    expect(screen.getByTestId("pattern-results-list")).toHaveAttribute(
+      "data-query",
+      "authentication",
+    );
+  });
+
+  it("passes selected ID to detail pane when a result row is selected", () => {
+    renderWorkspace(queryClient);
+
+    fireEvent.click(screen.getByRole("button", { name: /select pattern-1/i }));
+
+    expect(screen.getByTestId("pattern-detail-pane")).toHaveAttribute(
+      "data-pattern-id",
+      "pattern-1",
+    );
+  });
+
+  it("pivots to related pattern without disturbing search state", () => {
+    renderWorkspace(queryClient);
+
+    // Set an active search query
+    const searchInput = screen.getByRole("textbox", {
+      name: /search patterns/i,
+    });
+    fireEvent.change(searchInput, { target: { value: "jwt" } });
+    fireEvent.submit(searchInput.closest("form")!);
+
+    // Select a result to set a selectedId
+    fireEvent.click(screen.getByRole("button", { name: /select pattern-1/i }));
+
+    // Pivot to a related pattern
+    fireEvent.click(
+      screen.getByRole("button", { name: /pivot to related-1/i }),
+    );
+
+    // Detail pane now shows the related pattern
+    expect(screen.getByTestId("pattern-detail-pane")).toHaveAttribute(
+      "data-pattern-id",
+      "related-1",
+    );
+
+    // Search query is still active in the UI
+    expect(screen.getByLabelText("Active query")).toHaveTextContent("jwt");
   });
 });
