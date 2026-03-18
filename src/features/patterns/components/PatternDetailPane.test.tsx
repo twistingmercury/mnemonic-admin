@@ -1,16 +1,19 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { PatternDetailPane } from "./PatternDetailPane";
 import type { PatternDetail } from "../api/types";
 
 vi.mock("../api/client", () => ({
   getPattern: vi.fn(),
+  getPatternChunks: vi.fn(),
 }));
 
-import { getPattern } from "../api/client";
+import { getPattern, getPatternChunks } from "../api/client";
 
 const mockGetPattern = getPattern as ReturnType<typeof vi.fn>;
+const mockGetPatternChunks = getPatternChunks as ReturnType<typeof vi.fn>;
 
 function makeQueryClient() {
   return new QueryClient({
@@ -47,6 +50,8 @@ const MOCK_DETAIL: PatternDetail = {
 describe("PatternDetailPane", () => {
   beforeEach(() => {
     mockGetPattern.mockReset();
+    mockGetPatternChunks.mockReset();
+    mockGetPatternChunks.mockResolvedValue([]);
   });
 
   it("renders empty state when patternId is null", () => {
@@ -78,5 +83,72 @@ describe("PatternDetailPane", () => {
     await waitFor(() => {
       expect(screen.getByText("Failed to load pattern")).toBeInTheDocument();
     });
+  });
+
+  it("calls onSelectRelated with the related pattern id when a related pattern button is clicked", async () => {
+    const detailWithRelated: PatternDetail = {
+      ...MOCK_DETAIL,
+      related_patterns: [
+        {
+          id: "related-xyz",
+          name: "Beta Pattern",
+          description: "A related pattern",
+        },
+      ],
+    };
+    mockGetPattern.mockResolvedValue(detailWithRelated);
+
+    const onSelectRelated = vi.fn();
+    renderWithQuery(
+      <PatternDetailPane
+        patternId="pattern-abc"
+        onSelectRelated={onSelectRelated}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Beta Pattern")).toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getByRole("button", { name: /Beta Pattern/ }));
+
+    expect(onSelectRelated).toHaveBeenCalledOnce();
+    expect(onSelectRelated).toHaveBeenCalledWith("related-xyz");
+  });
+
+  it("clicking a related pattern does not call a separate search handler", async () => {
+    const detailWithRelated: PatternDetail = {
+      ...MOCK_DETAIL,
+      related_patterns: [
+        {
+          id: "related-xyz",
+          name: "Beta Pattern",
+          description: "A related pattern",
+        },
+      ],
+    };
+    mockGetPattern.mockResolvedValue(detailWithRelated);
+
+    const onSelectRelated = vi.fn();
+    const onSearch = vi.fn();
+
+    // onSearch is passed to a separate component (PatternSearchForm), not to PatternDetailPane.
+    // Rendering only PatternDetailPane here confirms its API does not expose a search callback,
+    // so pivoting via onSelectRelated cannot disturb search state.
+    renderWithQuery(
+      <PatternDetailPane
+        patternId="pattern-abc"
+        onSelectRelated={onSelectRelated}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Beta Pattern")).toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getByRole("button", { name: /Beta Pattern/ }));
+
+    expect(onSelectRelated).toHaveBeenCalledOnce();
+    expect(onSearch).not.toHaveBeenCalled();
   });
 });

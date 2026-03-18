@@ -6,9 +6,13 @@ import { PatternSupportSections } from "./PatternSupportSections";
 
 interface PatternDetailPaneProps {
   patternId: string | null;
+  onSelectRelated?: (id: string) => void;
 }
 
-export function PatternDetailPane({ patternId }: PatternDetailPaneProps) {
+export function PatternDetailPane({
+  patternId,
+  onSelectRelated,
+}: PatternDetailPaneProps) {
   const {
     data,
     isLoading: isDetailLoading,
@@ -56,6 +60,26 @@ export function PatternDetailPane({ patternId }: PatternDetailPaneProps) {
         chunks={chunks}
         agentAssociations={data.agent_associations}
       />
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <h3>Related Patterns</h3>
+        {data.related_patterns.length === 0 ? (
+          <p>No related patterns</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            {data.related_patterns.map((related) => (
+              <button
+                key={related.id}
+                type="button"
+                onClick={() => onSelectRelated?.(related.id)}
+                style={{ textAlign: "left" }}
+              >
+                <span>{related.name}</span>
+                {related.description && <span> — {related.description}</span>}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

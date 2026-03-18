@@ -40,7 +40,12 @@ export function PatternWorkspace() {
     <WorkspaceLayout
       header={<WorkspaceHeader onImportClick={handleImportClick} />}
       leftPane={leftPane}
-      rightPane={<PatternDetailPane patternId={selectedId} />}
+      rightPane={
+        <PatternDetailPane
+          patternId={selectedId}
+          onSelectRelated={setSelectedId}
+        />
+      }
     />
   );
 }
