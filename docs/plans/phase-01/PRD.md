@@ -263,7 +263,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: Invalid pattern files are rejected locally with explicit validation messages before submission is allowed, and validation unit tests pass.
 
-- [ ] **Cycle 17 - Translate parsed files into the pattern create payload**: Convert the validated file into the JSON request body expected by the API.
+- [x] **Cycle 17 - Translate parsed files into the pattern create payload**: Convert the validated file into the JSON request body expected by the API.
 - Agent: `react software engineer`
 - Files: `src/features/import/patternPayloadBuilder.ts`, `src/features/patterns/api/types.ts`, `src/features/import/ImportPatternOverlay.tsx`, `src/features/import/patternPayloadBuilder.test.ts`
 - Steps:

@@ -469,3 +469,38 @@ Verification passed:
 - npm audit --audit-level=high — zero vulnerabilities
 
 Next cycle: Cycle 17 — Translate parsed files into the pattern create payload
+
+---
+
+## Cycle 17 — Translate parsed files into the pattern create payload
+Date: 2026-03-18
+
+Summary:
+- Created src/features/import/patternPayloadBuilder.ts: pure function
+  buildPatternPayload(parsed: ParsedPatternFile): CreatePatternBody. Maps name,
+  description, body (as content), tags (string or string[] → string[]), optional
+  language/domain/entity_type, and agents (string or string[]) to
+  agent_associations with agent_name and default relevance 0.8, matching the
+  shell loader behavior in mnemonic-patterns/install/load.sh.
+- Updated src/features/patterns/api/types.ts: CreatePatternBody.agent_associations
+  updated to { agent_id?: string; agent_name?: string; relevance: number }[] to
+  match the shell loader's write path (agent_name, not agent_id).
+- Updated src/features/import/ImportPatternOverlay.tsx: replaced parsedFile state
+  with builtPayload (CreatePatternBody | null); calls buildPatternPayload after
+  parse+validation pass; renders "Ready to import: {name}" in the Import outcome
+  section when builtPayload is set.
+- Created src/features/import/patternPayloadBuilder.test.ts: 9 unit tests covering
+  required field mapping, tags as array, tags as string, optional fields included,
+  optional fields omitted, agents converted with relevance 0.8, single agent
+  string, agents absent, and content unchanged.
+
+Verification passed:
+- npm run build — exit 0 (282 kB bundle)
+- npm run test — 95/95 passed (14 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 pre-existing warnings in patternFileParser.ts)
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 18 — Submit imports and render success, conflict, and failure outcomes
+
