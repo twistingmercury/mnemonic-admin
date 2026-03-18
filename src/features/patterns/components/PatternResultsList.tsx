@@ -7,11 +7,15 @@ import { EMPTY_FILTERS } from "./PatternFilters";
 interface PatternResultsListProps {
   query?: string;
   filters?: FilterState;
+  onSelect?: (id: string) => void;
+  selectedId?: string | null;
 }
 
 export function PatternResultsList({
   query,
   filters = EMPTY_FILTERS,
+  onSelect,
+  selectedId,
 }: PatternResultsListProps) {
   const isSearchMode = typeof query === "string" && query.length > 0;
 
@@ -60,7 +64,12 @@ export function PatternResultsList({
   return (
     <ul>
       {patterns.map((pattern) => (
-        <PatternResultRow key={pattern.id} pattern={pattern} />
+        <PatternResultRow
+          key={pattern.id}
+          pattern={pattern}
+          onSelect={onSelect ?? (() => {})}
+          selected={selectedId === pattern.id}
+        />
       ))}
     </ul>
   );

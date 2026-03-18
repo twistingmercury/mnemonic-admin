@@ -2,9 +2,15 @@ import type { PatternListItem } from "../api/types";
 
 interface PatternResultRowProps {
   pattern: PatternListItem;
+  onSelect: (id: string) => void;
+  selected: boolean;
 }
 
-export function PatternResultRow({ pattern }: PatternResultRowProps) {
+export function PatternResultRow({
+  pattern,
+  onSelect,
+  selected,
+}: PatternResultRowProps) {
   const secondaryParts = [
     pattern.language,
     pattern.domain,
@@ -13,7 +19,12 @@ export function PatternResultRow({ pattern }: PatternResultRowProps) {
   ].filter(Boolean);
 
   return (
-    <li>
+    <li
+      role="button"
+      aria-pressed={selected}
+      onClick={() => onSelect(pattern.id)}
+      style={{ cursor: "pointer", fontWeight: selected ? "bold" : "normal" }}
+    >
       <div>
         <span>{pattern.name}</span>
       </div>
