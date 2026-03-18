@@ -285,7 +285,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: The import overlay can submit a valid file and show a clear result for success, conflict, or API failure, and component tests for each outcome pass.
 
-- [ ] **Cycle 19 - Refresh workspace state after successful import**: Return the user to discovery with updated data after import succeeds.
+- [x] **Cycle 19 - Refresh workspace state after successful import**: Return the user to discovery with updated data after import succeeds.
 - Agent: `react software engineer`
 - Files: `src/features/workspace/PatternWorkspace.tsx`, `src/features/import/ImportPatternOverlay.tsx`, `src/features/workspace/PatternWorkspace.test.tsx`
 - Steps:

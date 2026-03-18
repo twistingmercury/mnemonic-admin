@@ -533,3 +533,30 @@ Verification passed:
 
 Next cycle: Cycle 19 — Refresh workspace state after successful import
 
+---
+
+## Cycle 19 — Refresh workspace state after successful import
+Date: 2026-03-18
+
+Summary:
+- Added onImportSuccess?: (patternId: string) => void prop to ImportPatternOverlay.
+  On success, renders "Import successful: {id}" with two buttons: "Close" (calls
+  onClose) and "View Pattern" (calls onImportSuccess(patternId) then onClose).
+- Updated PatternWorkspace.tsx: uses useQueryClient; added handleImportSuccess
+  which invalidates ["patterns"] queries to trigger list refresh, sets selectedId
+  to the new patternId, and closes the overlay. activeQuery and activeFilters are
+  untouched.
+- Created src/features/workspace/PatternWorkspace.test.tsx: 3 tests — successful
+  import invalidates patterns query, successful import closes overlay, successful
+  import preserves activeQuery.
+
+Verification passed:
+- npm run build — exit 0 (101 tests, 283 kB bundle)
+- npm run test — 101/101 passed (15 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors
+- npx prettier --check . — all files clean
+
+Next cycle: Cycle 20 — Add loading, empty, and error states across browse, search,
+  detail, and import flows
+
