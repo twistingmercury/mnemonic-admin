@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { parsePatternFile, type ParsedPatternFile } from "./patternFileParser";
+import {
+  validatePatternFile,
+  type ValidationError,
+} from "./patternFileValidation";
 
 interface ImportPatternOverlayProps {
   onClose: () => void;
@@ -8,6 +12,9 @@ interface ImportPatternOverlayProps {
 export function ImportPatternOverlay({ onClose }: ImportPatternOverlayProps) {
   const [parseError, setParseError] = useState<string | null>(null);
   const [parsedFile, setParsedFile] = useState<ParsedPatternFile | null>(null);
+  const [validationErrors, setValidationErrors] = useState<
+    ValidationError[] | null
+  >(null);
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -19,13 +26,24 @@ export function ImportPatternOverlay({ onClose }: ImportPatternOverlayProps) {
       if (typeof content !== "string") return;
 
       const result = parsePatternFile(content);
-      if (result.ok) {
-        setParsedFile(result.value);
-        setParseError(null);
-      } else {
+      if (!result.ok) {
         setParseError(result.error.message);
         setParsedFile(null);
+        setValidationErrors(null);
+        return;
       }
+
+      const validation = validatePatternFile(result.value);
+      if (!validation.valid) {
+        setValidationErrors(validation.errors);
+        setParsedFile(null);
+        setParseError(null);
+        return;
+      }
+
+      setParsedFile(result.value);
+      setParseError(null);
+      setValidationErrors(null);
     };
     reader.readAsText(file);
   }
@@ -72,6 +90,13 @@ export function ImportPatternOverlay({ onClose }: ImportPatternOverlayProps) {
 
           <section aria-label="Validation feedback">
             {parseError !== null && <p>{parseError}</p>}
+            {validationErrors !== null && (
+              <ul>
+                {validationErrors.map((error) => (
+                  <li key={error.field}>{error.message}</li>
+                ))}
+              </ul>
+            )}
           </section>
 
           {/* parsedFile is set but rendered in a later cycle */}
