@@ -9,15 +9,17 @@ import {
 import { PatternDetailPane } from "../patterns/components/PatternDetailPane";
 import { WorkspaceHeader } from "./WorkspaceHeader";
 import { WorkspaceLayout } from "./WorkspaceLayout";
+import { ImportPatternOverlay } from "../import/ImportPatternOverlay";
 
 export function PatternWorkspace() {
   const [activeQuery, setActiveQuery] = useState("");
   const [activeFilters, setActiveFilters] =
     useState<FilterState>(EMPTY_FILTERS);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showImport, setShowImport] = useState(false);
 
   function handleImportClick() {
-    // placeholder — wired up in a later cycle
+    setShowImport(true);
   }
 
   const leftPane = (
@@ -37,15 +39,20 @@ export function PatternWorkspace() {
   );
 
   return (
-    <WorkspaceLayout
-      header={<WorkspaceHeader onImportClick={handleImportClick} />}
-      leftPane={leftPane}
-      rightPane={
-        <PatternDetailPane
-          patternId={selectedId}
-          onSelectRelated={setSelectedId}
-        />
-      }
-    />
+    <>
+      <WorkspaceLayout
+        header={<WorkspaceHeader onImportClick={handleImportClick} />}
+        leftPane={leftPane}
+        rightPane={
+          <PatternDetailPane
+            patternId={selectedId}
+            onSelectRelated={setSelectedId}
+          />
+        }
+      />
+      {showImport && (
+        <ImportPatternOverlay onClose={() => setShowImport(false)} />
+      )}
+    </>
   );
 }
