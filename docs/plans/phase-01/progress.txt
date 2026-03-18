@@ -151,3 +151,35 @@ Next cycle: Cycle 7 — Load and render the default browse list in the discovery
    src/features/patterns/components/PatternResultsList.tsx,
    src/features/patterns/components/PatternResultRow.tsx,
    src/features/patterns/components/PatternResultsList.test.tsx)
+
+---
+
+## Cycle 7 — Load and render the default browse list in the discovery rail
+Date: 2026-03-18
+
+Summary:
+- Created src/features/patterns/components/PatternResultRow.tsx: renders a single
+  PatternListItem as a <li> with name, description, tags as <span> elements, and
+  a compact secondary metadata line (language · domain · entity_type · version).
+- Created src/features/patterns/components/PatternResultsList.tsx: uses useQuery
+  with key ['patterns'] to call listPatterns(); renders "Loading…", error, empty
+  state, and a <ul> of PatternResultRow elements.
+- Created src/features/patterns/components/PatternResultsList.test.tsx: 4 tests
+  covering rows from mock data, empty state, loading state, and error state.
+  Each test uses its own QueryClient with retry: false; listPatterns mocked via
+  vi.mock.
+- Updated src/features/workspace/PatternWorkspace.tsx: leftPane now renders
+  <PatternResultsList /> instead of null.
+
+Verification passed:
+- npm run build — exit 0 (27 tests, 272 kB bundle)
+- npm run test — 27/27 passed
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 8 — Add the semantic search form and search submission flow
+  (src/features/patterns/components/PatternSearchForm.tsx,
+   src/features/workspace/PatternWorkspace.tsx,
+   src/features/patterns/components/PatternSearchForm.test.tsx)

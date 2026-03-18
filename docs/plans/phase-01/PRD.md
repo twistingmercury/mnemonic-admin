@@ -153,7 +153,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: All phase-1 pattern API calls are available through one typed client module, and unit tests covering client behavior and error normalization pass.
 
-- [ ] **Cycle 7 - Load and render the default browse list in the discovery rail**: Show patterns before the user searches.
+- [x] **Cycle 7 - Load and render the default browse list in the discovery rail**: Show patterns before the user searches.
 - Agent: `react software engineer`
 - Files: `src/features/workspace/PatternWorkspace.tsx`, `src/features/patterns/components/PatternResultsList.tsx`, `src/features/patterns/components/PatternResultRow.tsx`, `src/features/patterns/components/PatternResultsList.test.tsx`
 - Steps:
