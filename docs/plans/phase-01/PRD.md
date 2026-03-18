@@ -175,7 +175,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: The user can submit a semantic query and see search results rendered in the result list region, and component tests for the search form pass.
 
-- [ ] **Cycle 9 - Add lightweight search filters for phase-1 fields**: Support tags, language, domain, and agent filters without changing the primary search-first layout.
+- [x] **Cycle 9 - Add lightweight search filters for phase-1 fields**: Support tags, language, domain, and agent filters without changing the primary search-first layout.
 - Agent: `react software engineer`
 - Files: `src/features/patterns/components/PatternFilters.tsx`, `src/features/workspace/PatternWorkspace.tsx`, `src/features/patterns/components/PatternFilters.test.tsx`
 - Steps:

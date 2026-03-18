@@ -216,3 +216,38 @@ Next cycle: Cycle 9 — Add lightweight search filters for phase-1 fields
   (src/features/patterns/components/PatternFilters.tsx,
    src/features/workspace/PatternWorkspace.tsx,
    src/features/patterns/components/PatternFilters.test.tsx)
+
+---
+
+## Cycle 9 — Add lightweight search filters for phase-1 fields
+Date: 2026-03-18
+
+Summary:
+- Created src/features/patterns/components/filterTypes.ts: FilterState interface
+  (tags, language, domain, agent_id as strings) and EMPTY_FILTERS constant;
+  extracted to a separate file to satisfy react-refresh/only-export-components.
+- Created src/features/patterns/components/PatternFilters.tsx: four controlled
+  text inputs (tags, language, domain, agent); calls onFiltersChange on each
+  keystroke; renders aria-label="active filters" region when any filter is set.
+- Updated src/features/patterns/components/PatternResultsList.tsx: added optional
+  filters prop (defaults to EMPTY_FILTERS); filter values passed to listPatterns
+  and searchPatterns; included in query keys for correct refetch on filter change.
+- Updated src/features/workspace/PatternWorkspace.tsx: added activeFilters state;
+  renders PatternFilters between search form and results list; passes activeFilters
+  to PatternResultsList.
+- Created src/features/patterns/components/PatternFilters.test.tsx: 7 tests
+  covering input rendering, per-field onChange, active filter visibility, and
+  hidden state when all filters are empty.
+
+Verification passed:
+- npm run build — exit 0 (40 tests, bundle clean)
+- npm run test — 40/40 passed
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 10 — Add result selection and detail-pane loading
+  (src/features/workspace/PatternWorkspace.tsx,
+   src/features/patterns/components/PatternDetailPane.tsx,
+   src/features/patterns/components/PatternDetailPane.test.tsx)
