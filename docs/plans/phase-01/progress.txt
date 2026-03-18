@@ -438,3 +438,34 @@ Verification passed:
 - npm audit --audit-level=high — zero vulnerabilities
 
 Next cycle: Cycle 16 — Add local validation for required pattern-file rules
+
+---
+
+## Cycle 16 — Add local validation for required pattern-file rules
+Date: 2026-03-18
+
+Summary:
+- Created src/features/import/patternFileValidation.ts: pure validation module
+  exporting ValidationError, ValidationResult, and validatePatternFile. Checks
+  required frontmatter fields (name, description), presence of ## Overview in
+  body, and presence of at least one [//]: pattern decorator. Collects all
+  failures before returning (no short-circuit).
+- Updated src/features/import/ImportPatternOverlay.tsx: added validationErrors
+  state; after a successful parse, validation runs immediately; parse errors and
+  validation errors are mutually exclusive in the Validation feedback section;
+  validation errors rendered as a <ul>/<li> list; parsedFile is only set when
+  both parse and validation pass.
+- Created src/features/import/patternFileValidation.test.ts: 7 pure unit tests
+  covering valid file acceptance, missing name, missing description, empty name,
+  missing ## Overview, missing [//]: pattern decorator, and all-failures-collected
+  case.
+
+Verification passed:
+- npm run build — exit 0 (281 kB bundle)
+- npm run test — 86/86 passed (13 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 pre-existing warnings in patternFileParser.ts)
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 17 — Translate parsed files into the pattern create payload

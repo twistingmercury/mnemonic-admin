@@ -252,7 +252,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: The import flow can read one Markdown file and extract frontmatter and body or return a parse error, and parser unit tests pass.
 
-- [ ] **Cycle 16 - Add local validation for required pattern-file rules**: Block import before API submission when the file shape is invalid.
+- [x] **Cycle 16 - Add local validation for required pattern-file rules**: Block import before API submission when the file shape is invalid.
 - Agent: `react software engineer`
 - Files: `src/features/import/patternFileValidation.ts`, `src/features/import/ImportPatternOverlay.tsx`, `src/features/import/patternFileValidation.test.ts`
 - Steps:
