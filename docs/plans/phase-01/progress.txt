@@ -353,3 +353,31 @@ Verification passed:
 - npm audit --audit-level=high — zero vulnerabilities
 
 Next cycle: Cycle 13 — Implement related-pattern pivoting inside the detail pane
+
+---
+
+## Cycle 13 — Implement related-pattern pivoting inside the detail pane
+Date: 2026-03-18
+
+Summary:
+- Updated PatternDetailPane.tsx: added optional onSelectRelated prop; added
+  "Related Patterns" section below PatternSupportSections that renders each
+  related pattern as a button (name + description); clicking calls
+  onSelectRelated?.(id); empty state shows "No related patterns".
+- Updated PatternWorkspace.tsx: passes onSelectRelated={setSelectedId} to
+  PatternDetailPane; activeQuery and activeFilters are separate state and
+  remain untouched on pivot.
+- Updated PatternDetailPane.test.tsx: expanded vi.mock to cover getPatternChunks;
+  added test that clicking a related pattern button calls onSelectRelated with
+  the correct id; added test that the onSelectRelated and search callbacks are
+  fully independent (search state is not disturbed on pivot).
+
+Verification passed:
+- npm run build — exit 0 (278 kB bundle)
+- npm run test — 67/67 passed (10 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 14 — Build the import overlay shell and file picker

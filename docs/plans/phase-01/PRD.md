@@ -219,7 +219,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: The detail pane exposes chunk summaries and agent associations as structured supporting content, and component tests pass.
 
-- [ ] **Cycle 13 - Implement related-pattern pivoting inside the detail pane**: Allow pattern-to-pattern navigation without route changes or search-state loss.
+- [x] **Cycle 13 - Implement related-pattern pivoting inside the detail pane**: Allow pattern-to-pattern navigation without route changes or search-state loss.
 - Agent: `react software engineer`
 - Files: `src/features/patterns/components/PatternDetailPane.tsx`, `src/features/workspace/PatternWorkspace.tsx`, `src/features/patterns/components/PatternDetailPane.test.tsx`
 - Steps:
