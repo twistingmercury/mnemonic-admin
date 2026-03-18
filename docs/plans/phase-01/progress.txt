@@ -24,3 +24,23 @@ Verification passed:
 
 Next cycle: Cycle 2 — Create the Docker-first build scaffold
   (build/Dockerfile, build/build.sh)
+
+---
+
+## Cycle 2 — Create the Docker-first build scaffold
+Date: 2026-03-18
+
+Summary:
+- Added build/Dockerfile: multi-stage build using node:20-alpine for the builder
+  stage (npm ci + npm run build) and nginx:1.27-alpine as the runner stage
+  serving dist on port 80.
+- Added build/build.sh: POSIX bash script with set -euo pipefail; derives
+  PROJECT_ROOT from script location; runs docker build with the repo root as
+  context and tags the image mnemonic-admin:latest.
+- Set build/build.sh as executable (chmod +x).
+
+Verification passed:
+- test -f build/Dockerfile && test -f build/build.sh — both files present
+
+Next cycle: Cycle 3 — Add the CI workflow definition
+  (.github/workflows/frontend-ci.yaml)

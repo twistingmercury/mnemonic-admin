@@ -100,7 +100,7 @@ for this phase.
 - Verify: `npm install && npm run build && npm run test`
 - Done: The repo contains a working Vite React TypeScript app, `npm run build` exits 0, and `npm run test` exits 0.
 
-- [ ] **Cycle 2 - Create the Docker-first build scaffold**: Add the containerized build artifacts and repository build entrypoint.
+- [x] **Cycle 2 - Create the Docker-first build scaffold**: Add the containerized build artifacts and repository build entrypoint.
 - Agent: `devops engineer`
 - Files: `build/Dockerfile`, `build/build.sh`
 - Steps:
