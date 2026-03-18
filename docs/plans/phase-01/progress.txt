@@ -589,3 +589,36 @@ Verification passed:
 
 Next cycle: Cycle 21 — Audit and fill test coverage gaps
 
+---
+
+## Cycle 21 — Audit and fill test coverage gaps
+Date: 2026-03-18
+
+Summary:
+- Reviewed all 15 test files under src/ against their source modules.
+- Added 32 new test cases across 9 test files targeting edge conditions,
+  error branches, and boundary inputs not covered in prior cycles.
+- patternFileParser.test.ts: +6 cases (empty frontmatter, skipped lines,
+  empty inline sequences, block-sequence edge cases, body with no leading newline).
+- patternFileValidation.test.ts: +4 cases (whitespace-only description,
+  non-string name, empty body, isolated field checks).
+- patternPayloadBuilder.test.ts: +3 cases (empty tags array, empty agents
+  array, absent tags key omitted).
+- client.test.ts: +8 cases (listPatterns with params, no-param URL shape,
+  URL-encoded chunk id, Content-Type header, toApiError edge cases).
+- ImportPatternOverlay.test.tsx: +5 cases (parse error display, ready-to-import
+  message, submitting state, View Pattern callback, file reset after success).
+- WorkspaceHeader.test.tsx: +1 case (onImportClick called on button click).
+- PatternSearchForm.test.tsx: +1 case (whitespace-only input trims to empty).
+- PatternResultsList.test.tsx: +3 cases (onSelect called, aria-pressed states).
+- PatternContent.test.tsx: +1 case (empty string content renders without throw).
+
+Verification passed:
+- npm run test — 136/136 passed (15 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 pre-existing warnings)
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 22 — Add UI and end-to-end tests for the main workspace flows
+

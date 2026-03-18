@@ -307,7 +307,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: Every primary phase-1 screen region has explicit handling for waiting, empty, and failure conditions, and component tests for each state pass.
 
-- [ ] **Cycle 21 - Audit and fill test coverage gaps**: Review all prior cycle test files and close any missing or shallow coverage.
+- [x] **Cycle 21 - Audit and fill test coverage gaps**: Review all prior cycle test files and close any missing or shallow coverage.
 - Agent: `react software engineer`
 - Files: any existing test files under `src/` that need additional cases
 - Steps:
