@@ -63,6 +63,46 @@ describe("ImportPatternOverlay", () => {
     ).toBeDefined();
   });
 
+  it("shows the idle instruction when no file has been selected", () => {
+    render(<ImportPatternOverlay onClose={vi.fn()} />);
+    expect(
+      screen.getByText("Select a Markdown file to import."),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /submit/i })).toBeNull();
+  });
+
+  it("shows validation errors when the selected file fails validation", async () => {
+    const { validatePatternFile } = await import("./patternFileValidation");
+    vi.mocked(validatePatternFile).mockReturnValueOnce({
+      valid: false,
+      errors: [{ field: "name", message: "Name is required" }],
+    });
+
+    class SyncFileReader {
+      onload: ((e: { target: { result: string } }) => void) | null = null;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      readAsText(_file: File) {
+        this.onload?.({ target: { result: "# mock content" } });
+      }
+    }
+    vi.stubGlobal("FileReader", SyncFileReader);
+
+    const user = userEvent.setup();
+    render(<ImportPatternOverlay onClose={vi.fn()} />);
+
+    const file = new File(["# content"], "invalid.md", {
+      type: "text/markdown",
+    });
+    const input = screen.getByLabelText("Select Markdown file");
+    await user.upload(input, file);
+
+    await waitFor(() => {
+      expect(screen.getByText("Name is required")).toBeInTheDocument();
+    });
+
+    vi.unstubAllGlobals();
+  });
+
   describe("submit outcomes", () => {
     beforeEach(() => {
       class SyncFileReader {

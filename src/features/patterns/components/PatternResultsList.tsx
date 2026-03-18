@@ -46,11 +46,13 @@ export function PatternResultsList({
   const { isLoading, isError } = isSearchMode ? searchResult : browseResult;
 
   if (isLoading) {
-    return <div>Loading…</div>;
+    return <div>{isSearchMode ? "Searching…" : "Loading patterns…"}</div>;
   }
 
   if (isError) {
-    return <div>Failed to load patterns</div>;
+    return (
+      <div>{isSearchMode ? "Search failed" : "Failed to load patterns"}</div>
+    );
   }
 
   const patterns = isSearchMode
@@ -58,7 +60,11 @@ export function PatternResultsList({
     : (browseResult.data?.data ?? []);
 
   if (patterns.length === 0) {
-    return <div>No patterns found</div>;
+    return (
+      <div>
+        {isSearchMode ? "No results for your search" : "No patterns found"}
+      </div>
+    );
   }
 
   return (

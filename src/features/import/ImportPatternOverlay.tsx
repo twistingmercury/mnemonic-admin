@@ -137,6 +137,9 @@ export function ImportPatternOverlay({
           </section>
 
           <section aria-label="Import outcome">
+            {builtPayload === null && submitState.status === "idle" && (
+              <p>Select a Markdown file to import.</p>
+            )}
             {builtPayload !== null && submitState.status === "idle" && (
               <>
                 <p>Ready to import: {builtPayload.name}</p>

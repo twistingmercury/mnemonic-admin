@@ -6,11 +6,13 @@ import type { PaginatedResponse, PatternListItem } from "../api/types";
 
 vi.mock("../api/client", () => ({
   listPatterns: vi.fn(),
+  searchPatterns: vi.fn(),
 }));
 
-import { listPatterns } from "../api/client";
+import { listPatterns, searchPatterns } from "../api/client";
 
 const mockListPatterns = listPatterns as ReturnType<typeof vi.fn>;
+const mockSearchPatterns = searchPatterns as ReturnType<typeof vi.fn>;
 
 function makeQueryClient() {
   return new QueryClient({
@@ -55,6 +57,7 @@ function makeResponse(
 describe("PatternResultsList", () => {
   beforeEach(() => {
     mockListPatterns.mockReset();
+    mockSearchPatterns.mockReset();
   });
 
   it("renders a row for each pattern in the response", async () => {
@@ -89,7 +92,7 @@ describe("PatternResultsList", () => {
 
     renderWithQuery(<PatternResultsList />);
 
-    expect(screen.getByText("Loading…")).toBeInTheDocument();
+    expect(screen.getByText("Loading patterns…")).toBeInTheDocument();
   });
 
   it("shows error state when the query fails", async () => {
@@ -99,6 +102,42 @@ describe("PatternResultsList", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Failed to load patterns")).toBeInTheDocument();
+    });
+  });
+
+  describe("search mode", () => {
+    it("shows searching state while the search query is in flight", () => {
+      mockSearchPatterns.mockReturnValue(new Promise(() => {}));
+
+      renderWithQuery(<PatternResultsList query="test query" />);
+
+      expect(screen.getByText("Searching…")).toBeInTheDocument();
+    });
+
+    it("shows empty state when the search returns no results", async () => {
+      mockSearchPatterns.mockResolvedValue({
+        results: [],
+        total: 0,
+        query: "test query",
+      });
+
+      renderWithQuery(<PatternResultsList query="test query" />);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("No results for your search"),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("shows error state when the search fails", async () => {
+      mockSearchPatterns.mockRejectedValue(new Error("search error"));
+
+      renderWithQuery(<PatternResultsList query="test query" />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Search failed")).toBeInTheDocument();
+      });
     });
   });
 });
