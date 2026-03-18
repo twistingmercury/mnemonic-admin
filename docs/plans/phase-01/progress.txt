@@ -183,3 +183,36 @@ Next cycle: Cycle 8 — Add the semantic search form and search submission flow
   (src/features/patterns/components/PatternSearchForm.tsx,
    src/features/workspace/PatternWorkspace.tsx,
    src/features/patterns/components/PatternSearchForm.test.tsx)
+
+---
+
+## Cycle 8 — Add the semantic search form and search submission flow
+Date: 2026-03-18
+
+Summary:
+- Created src/features/patterns/components/PatternSearchForm.tsx: controlled form
+  with labelled text input and submit button; accepts onSearch and activeQuery props;
+  shows active query when non-empty; trims whitespace before calling onSearch.
+- Created src/features/patterns/components/PatternSearchForm.test.tsx: 6 tests
+  covering input rendering, submit via button click, submit via Enter key, active
+  query visibility, active query region absence when empty, and whitespace trimming.
+- Updated src/features/patterns/components/PatternResultsList.tsx: added optional
+  query prop; when non-empty calls searchPatterns({ q: query }) with key
+  ["patterns", "search", query] and maps SearchResponse.results; falls back to
+  listPatterns() behavior unchanged.
+- Updated src/features/workspace/PatternWorkspace.tsx: added activeQuery state;
+  composes PatternSearchForm above PatternResultsList in leftPane; wires onSearch
+  to setActiveQuery and passes activeQuery as query to PatternResultsList.
+
+Verification passed:
+- npm run build — exit 0 (33 tests, 273 kB bundle)
+- npm run test — 33/33 passed (5 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 9 — Add lightweight search filters for phase-1 fields
+  (src/features/patterns/components/PatternFilters.tsx,
+   src/features/workspace/PatternWorkspace.tsx,
+   src/features/patterns/components/PatternFilters.test.tsx)

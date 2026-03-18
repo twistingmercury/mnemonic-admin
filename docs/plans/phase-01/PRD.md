@@ -164,7 +164,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: Opening the app shows a non-search browse list in the left pane, and component tests for the results list pass.
 
-- [ ] **Cycle 8 - Add the semantic search form and search submission flow**: Replace default browse results with ranked search results when a query is submitted.
+- [x] **Cycle 8 - Add the semantic search form and search submission flow**: Replace default browse results with ranked search results when a query is submitted.
 - Agent: `react software engineer`
 - Files: `src/features/patterns/components/PatternSearchForm.tsx`, `src/features/workspace/PatternWorkspace.tsx`, `src/features/patterns/components/PatternSearchForm.test.tsx`
 - Steps:
