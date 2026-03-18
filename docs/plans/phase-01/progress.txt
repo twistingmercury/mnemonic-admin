@@ -622,3 +622,38 @@ Verification passed:
 
 Next cycle: Cycle 22 — Add UI and end-to-end tests for the main workspace flows
 
+---
+
+## Cycle 22 — Add UI and end-to-end tests for the main workspace flows
+Date: 2026-03-18
+
+Summary:
+- Updated PatternResultsList and PatternDetailPane vi.mock stubs in
+  PatternWorkspace.test.tsx to forward key props as data-* attributes and
+  expose buttons that fire onSelect and onSelectRelated callbacks.
+- Added new describe block "PatternWorkspace — browse and search flows" with
+  4 UI tests: initial browse state, search submission propagation, result
+  selection triggering detail pane update, and related-pattern pivoting while
+  preserving search query state.
+- Created playwright.config.ts with testDir ./tests/e2e, Chromium project,
+  baseURL http://localhost:5173, and webServer block for npm run dev.
+- Created tests/e2e/fixtures/valid-pattern.md: valid frontmatter, ## Overview,
+  and [//]: pattern decorator.
+- Created tests/e2e/fixtures/invalid-pattern.md: valid frontmatter but missing
+  ## Overview and [//]: pattern decorator.
+- Created tests/e2e/pattern-workspace.spec.ts: two Playwright tests using route
+  interception (no real API required). "successful import path" covers file
+  upload → ready state → submit → success message. "validation failure path"
+  covers invalid file → validation errors visible → Submit button absent.
+- Updated vite.config.ts: added tests/e2e/** to Vitest exclude list to prevent
+  Playwright specs from being picked up by the unit test runner.
+
+Verification passed:
+- npm run test — 140/140 passed (15 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 pre-existing warnings)
+- npx prettier --check . — all files clean
+- npm run e2e — 2/2 Playwright tests passed
+
+Next cycle: Cycle 23 — Write contributor-facing setup and usage documentation
+

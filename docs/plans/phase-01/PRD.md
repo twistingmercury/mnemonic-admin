@@ -317,7 +317,7 @@ for this phase.
 - Verify: `npm run test`
 - Done: All prior cycle test files have meaningful coverage of their primary behaviors, edge cases, and error paths.
 
-- [ ] **Cycle 22 - Add UI and end-to-end tests for the main workspace flows**: Prove the search and import workflows from the user’s perspective.
+- [x] **Cycle 22 - Add UI and end-to-end tests for the main workspace flows**: Prove the search and import workflows from the user’s perspective.
 - Agent: `react software engineer`
 - Files: `src/features/workspace/PatternWorkspace.test.tsx`, `tests/e2e/pattern-workspace.spec.ts`
 - Steps:
