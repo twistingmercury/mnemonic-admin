@@ -657,3 +657,26 @@ Verification passed:
 
 Next cycle: Cycle 23 — Write contributor-facing setup and usage documentation
 
+---
+
+## Cycle 23 — Write contributor-facing setup and usage documentation
+Date: 2026-03-18
+
+Summary:
+- Updated README.md with four targeted edits:
+  - Removed the stale "scaffold not built yet" note from the Quick Start section.
+  - Added an Environment Configuration section documenting VITE_API_BASE_URL,
+    the default fallback (http://localhost:8080/v1/api), and .env.local override.
+  - Fixed the E2E test description: tests use Playwright route interception and
+    do not require a live API; corrected the earlier claim that a running API
+    was required for tests.
+  - Strengthened the Markdown Pattern Import section with explicit limitations:
+    one file at a time, .md only, required frontmatter fields (name, description),
+    required body sections (## Overview, [//]: pattern decorator), agent mapping
+    behavior (agent_name, default relevance 0.8), and validation scope note.
+
+Verification passed:
+- test -f README.md — file present
+
+Next cycle: PRD is complete. All 23 cycles marked done.
+

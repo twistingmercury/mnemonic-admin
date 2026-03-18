@@ -327,7 +327,7 @@ for this phase.
 - Verify: `npm run test && npm run e2e`
 - Done: The highest-value browse, search, detail, and import workflows are covered by automated UI and browser tests.
 
-- [ ] **Cycle 23 - Write contributor-facing setup and usage documentation**: Explain how to run, test, and configure the new frontend.
+- [x] **Cycle 23 - Write contributor-facing setup and usage documentation**: Explain how to run, test, and configure the new frontend.
 - Agent: `technical writer`
 - Files: `README.md`
 - Steps:
