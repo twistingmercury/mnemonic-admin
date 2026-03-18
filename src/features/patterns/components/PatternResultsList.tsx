@@ -1,12 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
-import { listPatterns } from "../api/client";
+import { listPatterns, searchPatterns } from "../api/client";
 import { PatternResultRow } from "./PatternResultRow";
 
-export function PatternResultsList() {
-  const { data, isLoading, isError } = useQuery({
+interface PatternResultsListProps {
+  query?: string;
+}
+
+export function PatternResultsList({ query }: PatternResultsListProps) {
+  const isSearchMode = typeof query === "string" && query.length > 0;
+
+  const browseResult = useQuery({
     queryKey: ["patterns"],
     queryFn: () => listPatterns(),
+    enabled: !isSearchMode,
   });
+
+  const searchResult = useQuery({
+    queryKey: ["patterns", "search", query ?? ""],
+    queryFn: () => searchPatterns({ q: query! }),
+    enabled: isSearchMode,
+  });
+
+  const { isLoading, isError } = isSearchMode ? searchResult : browseResult;
 
   if (isLoading) {
     return <div>Loading…</div>;
@@ -16,7 +31,9 @@ export function PatternResultsList() {
     return <div>Failed to load patterns</div>;
   }
 
-  const patterns = data?.data ?? [];
+  const patterns = isSearchMode
+    ? (searchResult.data?.results ?? [])
+    : (browseResult.data?.data ?? []);
 
   if (patterns.length === 0) {
     return <div>No patterns found</div>;
