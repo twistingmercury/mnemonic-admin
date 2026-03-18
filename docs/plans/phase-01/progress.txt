@@ -44,3 +44,20 @@ Verification passed:
 
 Next cycle: Cycle 3 — Add the CI workflow definition
   (.github/workflows/frontend-ci.yaml)
+
+---
+
+## Cycle 3 — Add the CI workflow definition
+Date: 2026-03-18
+
+Summary:
+- Created .github/workflows/frontend-ci.yaml.
+- Workflow triggers on push and pull_request (all branches).
+- Single build job checks out the repo and runs ./build/build.sh.
+- No inline build logic — all Docker build steps remain in the script.
+
+Verification passed:
+- test -f .github/workflows/frontend-ci.yaml — file present
+
+Next cycle: Cycle 4 — Add routing, query client setup, and global app providers
+  (src/main.tsx, src/app/App.tsx, src/app/router.tsx, src/app/providers.tsx, src/app/App.test.tsx)

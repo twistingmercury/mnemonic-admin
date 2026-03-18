@@ -110,7 +110,7 @@ for this phase.
 - Verify: `test -f build/Dockerfile && test -f build/build.sh`
 - Done: The repo contains a Docker-first build scaffold and one script intended to become the canonical build entrypoint.
 
-- [ ] **Cycle 3 - Add the CI workflow definition**: Create the GitHub Actions workflow that calls the repository build script.
+- [x] **Cycle 3 - Add the CI workflow definition**: Create the GitHub Actions workflow that calls the repository build script.
 - Agent: `devops engineer`
 - Files: `.github/workflows/frontend-ci.yaml`
 - Steps:
