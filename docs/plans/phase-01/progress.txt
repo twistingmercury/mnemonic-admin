@@ -61,3 +61,31 @@ Verification passed:
 
 Next cycle: Cycle 4 — Add routing, query client setup, and global app providers
   (src/main.tsx, src/app/App.tsx, src/app/router.tsx, src/app/providers.tsx, src/app/App.test.tsx)
+
+---
+
+## Cycle 4 — Add routing, query client setup, and global app providers
+Date: 2026-03-18
+
+Summary:
+- Extracted provider setup into src/app/providers.tsx: AppProviders wraps
+  children with QueryClientProvider (staleTime: 60000, retry: 1).
+- Extracted routing into src/app/router.tsx: AppRouter renders BrowserRouter +
+  Routes with one workspace route at / (WorkspacePlaceholder).
+- Refactored src/app/App.tsx to compose AppProviders around AppRouter; removed
+  all inline provider and route logic.
+- Added src/app/App.test.tsx: component test that mounts <App /> and asserts the
+  heading renders without runtime errors.
+
+Verification passed:
+- npm run build — exit 0
+- npm run test — 1 test, exit 0
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+
+Next cycle: Cycle 5 — Implement the workspace shell and top-level split layout
+  (src/app/App.tsx, src/features/workspace/PatternWorkspace.tsx,
+   src/features/workspace/WorkspaceHeader.tsx,
+   src/features/workspace/WorkspaceLayout.tsx,
+   src/features/workspace/WorkspaceHeader.test.tsx)

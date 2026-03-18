@@ -120,7 +120,7 @@ for this phase.
 - Verify: `test -f .github/workflows/frontend-ci.yaml`
 - Done: The repository contains a CI workflow file that delegates build logic to `build/build.sh`.
 
-- [ ] **Cycle 4 - Add routing, query client setup, and global app providers**: Establish the application runtime shell before feature work starts.
+- [x] **Cycle 4 - Add routing, query client setup, and global app providers**: Establish the application runtime shell before feature work starts.
 - Agent: `react software engineer`
 - Files: `src/main.tsx`, `src/app/App.tsx`, `src/app/router.tsx`, `src/app/providers.tsx`, `src/app/App.test.tsx`
 - Steps:
