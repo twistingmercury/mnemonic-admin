@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { parsePatternFile, type ParsedPatternFile } from "./patternFileParser";
+import { parsePatternFile } from "./patternFileParser";
 import {
   validatePatternFile,
   type ValidationError,
 } from "./patternFileValidation";
+import { buildPatternPayload } from "./patternPayloadBuilder";
+import type { CreatePatternBody } from "../patterns/api/types";
 
 interface ImportPatternOverlayProps {
   onClose: () => void;
@@ -11,13 +13,20 @@ interface ImportPatternOverlayProps {
 
 export function ImportPatternOverlay({ onClose }: ImportPatternOverlayProps) {
   const [parseError, setParseError] = useState<string | null>(null);
-  const [parsedFile, setParsedFile] = useState<ParsedPatternFile | null>(null);
   const [validationErrors, setValidationErrors] = useState<
     ValidationError[] | null
   >(null);
+  const [builtPayload, setBuiltPayload] = useState<CreatePatternBody | null>(
+    null,
+  );
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
+
+    setBuiltPayload(null);
+    setParseError(null);
+    setValidationErrors(null);
+
     if (!file) return;
 
     const reader = new FileReader();
@@ -28,22 +37,16 @@ export function ImportPatternOverlay({ onClose }: ImportPatternOverlayProps) {
       const result = parsePatternFile(content);
       if (!result.ok) {
         setParseError(result.error.message);
-        setParsedFile(null);
-        setValidationErrors(null);
         return;
       }
 
       const validation = validatePatternFile(result.value);
       if (!validation.valid) {
         setValidationErrors(validation.errors);
-        setParsedFile(null);
-        setParseError(null);
         return;
       }
 
-      setParsedFile(result.value);
-      setParseError(null);
-      setValidationErrors(null);
+      setBuiltPayload(buildPatternPayload(result.value));
     };
     reader.readAsText(file);
   }
@@ -99,8 +102,11 @@ export function ImportPatternOverlay({ onClose }: ImportPatternOverlayProps) {
             )}
           </section>
 
-          {/* parsedFile is set but rendered in a later cycle */}
-          <section aria-label="Import outcome">{parsedFile && null}</section>
+          <section aria-label="Import outcome">
+            {builtPayload !== null && (
+              <p>Ready to import: {builtPayload.name}</p>
+            )}
+          </section>
         </div>
       </div>
     </div>

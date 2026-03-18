@@ -85,7 +85,11 @@ export interface CreatePatternBody {
   language?: string;
   domain?: string;
   entity_type?: string;
-  agent_associations?: { agent_id: string; relevance: number }[];
+  agent_associations?: {
+    agent_id?: string;
+    agent_name?: string;
+    relevance: number;
+  }[];
 }
 
 // ─── Error types ──────────────────────────────────────────────────────────────
