@@ -1,18 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-
-function WorkspacePlaceholder() {
-  return (
-    <main>
-      <h1>Mnemonic Admin</h1>
-    </main>
-  );
-}
+import { PatternWorkspace } from "../features/workspace/PatternWorkspace";
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<WorkspacePlaceholder />} />
+        <Route path="/" element={<PatternWorkspace />} />
       </Routes>
     </BrowserRouter>
   );
