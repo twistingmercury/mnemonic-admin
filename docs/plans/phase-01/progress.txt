@@ -89,3 +89,32 @@ Next cycle: Cycle 5 — Implement the workspace shell and top-level split layout
    src/features/workspace/WorkspaceHeader.tsx,
    src/features/workspace/WorkspaceLayout.tsx,
    src/features/workspace/WorkspaceHeader.test.tsx)
+
+---
+
+## Cycle 5 — Implement the workspace shell and top-level split layout
+Date: 2026-03-18
+
+Summary:
+- Created src/features/workspace/WorkspaceLayout.tsx: flex split-pane layout
+  accepting header, leftPane, and rightPane props; left pane is w-96 overflow-auto,
+  right pane is flex-1 overflow-auto; outer container is flex h-screen flex-col.
+- Created src/features/workspace/WorkspaceHeader.tsx: header with "Mnemonic Admin"
+  heading and "Import Pattern" button; exposes onImportClick prop.
+- Created src/features/workspace/PatternWorkspace.tsx: composes WorkspaceLayout and
+  WorkspaceHeader; left/right panes are empty for now.
+- Updated src/app/router.tsx: replaced WorkspacePlaceholder with PatternWorkspace.
+- Created src/features/workspace/WorkspaceHeader.test.tsx: tests that the heading
+  renders and the Import Pattern button is present.
+
+Verification passed:
+- npm run build — exit 0
+- npm run test — 3 tests (App.test.tsx + WorkspaceHeader.test.tsx), exit 0
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 6 — Create typed Mnemonic API models and client functions
+  (src/features/patterns/api/types.ts, src/features/patterns/api/client.ts,
+   src/features/patterns/api/client.test.ts)

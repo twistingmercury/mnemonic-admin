@@ -131,7 +131,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: The app boots with router and query providers, renders the root route without runtime errors, and component tests pass.
 
-- [ ] **Cycle 5 - Implement the workspace shell and top-level split layout**: Render the approved header, discovery rail container, and detail pane container.
+- [x] **Cycle 5 - Implement the workspace shell and top-level split layout**: Render the approved header, discovery rail container, and detail pane container.
 - Agent: `react software engineer`
 - Files: `src/app/App.tsx`, `src/features/workspace/PatternWorkspace.tsx`, `src/features/workspace/WorkspaceHeader.tsx`, `src/features/workspace/WorkspaceLayout.tsx`, `src/features/workspace/WorkspaceHeader.test.tsx`
 - Steps:
