@@ -1,0 +1,26 @@
+## Cycle 1 — Scaffold the frontend app with the approved toolchain
+Date: 2026-03-18
+
+Summary:
+- Created the Vite React TypeScript application from scratch.
+- Added package.json with all ADR-specified dependencies: React 19, TypeScript,
+  Vite, TanStack Query, React Router, Tailwind CSS, Vitest, React Testing
+  Library, Playwright, ESLint (typescript-eslint, react-hooks, react-refresh,
+  security plugins), and Prettier.
+- Added baseline scripts: dev, build, test, e2e.
+- Created minimal app root (src/main.tsx, src/app/App.tsx) with QueryClientProvider
+  and BrowserRouter shell.
+- Added src/test-setup.ts importing @testing-library/jest-dom.
+- Added Tailwind CSS config (tailwind.config.js, postcss.config.js), ESLint flat
+  config (eslint.config.js), Prettier config (.prettierrc), and TypeScript
+  configs (tsconfig.json, tsconfig.app.json, tsconfig.node.json).
+
+Verification passed:
+- npm install && npm run build && npm run test — all exit 0
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 2 — Create the Docker-first build scaffold
+  (build/Dockerfile, build/build.sh)
