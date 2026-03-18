@@ -251,3 +251,40 @@ Next cycle: Cycle 10 — Add result selection and detail-pane loading
   (src/features/workspace/PatternWorkspace.tsx,
    src/features/patterns/components/PatternDetailPane.tsx,
    src/features/patterns/components/PatternDetailPane.test.tsx)
+
+---
+
+## Cycle 10 — Add result selection and detail-pane loading
+Date: 2026-03-18
+
+Summary:
+- Created src/features/patterns/components/PatternDetailPane.tsx: accepts patternId
+  (string | null); renders empty state "Select a pattern to view details" when null;
+  uses useQuery with key ["pattern", patternId] to call getPattern() when set;
+  shows loading, error, and success (name + content) states.
+- Created src/features/patterns/components/PatternDetailPane.test.tsx: 3 tests
+  covering null patternId empty state, non-null patternId triggering getPattern and
+  rendering the pattern name on success, and error state rendering.
+- Updated src/features/patterns/components/PatternResultRow.tsx: added onSelect and
+  selected props; li is now role="button" with aria-pressed, onClick, cursor:pointer,
+  and fontWeight:bold when selected.
+- Updated src/features/patterns/components/PatternResultsList.tsx: added optional
+  onSelect and selectedId props; passed through to each PatternResultRow; defaults
+  to no-op to preserve existing test compatibility.
+- Updated src/features/workspace/PatternWorkspace.tsx: added selectedId state (null);
+  wired onSelect={setSelectedId} and selectedId into PatternResultsList; passed
+  PatternDetailPane as rightPane.
+
+Verification passed:
+- npm run build — exit 0 (43 tests, bundle clean)
+- npm run test — 43/43 passed
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+
+Next cycle: Cycle 11 — Render the core pattern detail view
+  (src/features/patterns/components/PatternDetailPane.tsx,
+   src/features/patterns/components/PatternMetadata.tsx,
+   src/features/patterns/components/PatternContent.tsx,
+   src/features/patterns/components/PatternMetadata.test.tsx,
+   src/features/patterns/components/PatternContent.test.tsx)

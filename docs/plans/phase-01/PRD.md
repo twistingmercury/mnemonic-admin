@@ -186,7 +186,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: Search requests can be refined with the approved lightweight filters, and component tests for filter state and submission pass.
 
-- [ ] **Cycle 10 - Add result selection and detail-pane loading**: Selecting a result should hydrate the right pane with the full pattern record.
+- [x] **Cycle 10 - Add result selection and detail-pane loading**: Selecting a result should hydrate the right pane with the full pattern record.
 - Agent: `react software engineer`
 - Files: `src/features/workspace/PatternWorkspace.tsx`, `src/features/patterns/components/PatternDetailPane.tsx`, `src/features/patterns/components/PatternDetailPane.test.tsx`
 - Steps:
