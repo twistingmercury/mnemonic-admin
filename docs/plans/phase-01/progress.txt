@@ -409,3 +409,32 @@ Verification passed:
 - npm audit --audit-level=high — zero vulnerabilities
 
 Next cycle: Cycle 15 — Parse Markdown pattern files and extract frontmatter and body
+
+---
+
+## Cycle 15 — Parse Markdown pattern files and extract frontmatter and body
+Date: 2026-03-18
+
+Summary:
+- Created src/features/import/patternFileParser.ts: zero-dependency parser returning
+  ParseResult discriminated union (ok: true/false). Handles simple key:value scalars,
+  block sequences (- item lines), and inline sequences ([a, b]). Single- and
+  double-quoted values are unquoted. Returns ParseError with a descriptive message
+  when the opening --- delimiter is missing or the closing --- delimiter is absent.
+- Updated src/features/import/ImportPatternOverlay.tsx: added parseError and parsedFile
+  state; wired FileReader.readAsText onChange handler to the file input; calls
+  parsePatternFile on file content; surfaces parse error message inside the existing
+  "Validation feedback" section when non-null.
+- Created src/features/import/patternFileParser.test.ts: 7 pure unit tests covering
+  valid simple frontmatter, block arrays, inline arrays, missing opening delimiter,
+  missing closing delimiter, empty body, and quoted string unescaping.
+
+Verification passed:
+- npm run build — exit 0 (281 kB bundle)
+- npm run test — 79/79 passed (12 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 false-positive security warnings for dynamic key writes, all expected)
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 16 — Add local validation for required pattern-file rules

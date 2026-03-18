@@ -241,7 +241,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: The workspace can open a single-file import overlay that matches the approved wireframe structure, and component tests for open and close behavior pass.
 
-- [ ] **Cycle 15 - Parse Markdown pattern files and extract frontmatter and body**: Establish the browser-side import parser aligned with the existing shell loader.
+- [x] **Cycle 15 - Parse Markdown pattern files and extract frontmatter and body**: Establish the browser-side import parser aligned with the existing shell loader.
 - Agent: `react software engineer`
 - Files: `src/features/import/patternFileParser.ts`, `src/features/import/ImportPatternOverlay.tsx`, `src/features/import/patternFileParser.test.ts`
 - Steps:
