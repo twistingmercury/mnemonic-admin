@@ -274,7 +274,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: A validated pattern file can be transformed into the exact request shape used by `POST /patterns`, and payload builder unit tests pass.
 
-- [ ] **Cycle 18 - Submit imports and render success, conflict, and failure outcomes**: Connect the import overlay to the API and display actionable outcomes.
+- [x] **Cycle 18 - Submit imports and render success, conflict, and failure outcomes**: Connect the import overlay to the API and display actionable outcomes.
 - Agent: `react software engineer`
 - Files: `src/features/import/ImportPatternOverlay.tsx`, `src/features/patterns/api/client.ts`, `src/features/import/ImportPatternOverlay.test.tsx`
 - Steps:

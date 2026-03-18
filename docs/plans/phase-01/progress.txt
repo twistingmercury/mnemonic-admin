@@ -504,3 +504,32 @@ Verification passed:
 
 Next cycle: Cycle 18 — Submit imports and render success, conflict, and failure outcomes
 
+---
+
+## Cycle 18 — Submit imports and render success, conflict, and failure outcomes
+Date: 2026-03-18
+
+Summary:
+- Added SubmitState discriminated union (idle | submitting | success | conflict | error)
+  to ImportPatternOverlay.tsx.
+- Added handleSubmit async function: sets submitting state, calls createPattern(builtPayload),
+  sets success with patternId on resolve, sets conflict on 409, sets error with message on
+  other failures.
+- Updated import outcome section: Submit button shown when builtPayload is ready and state
+  is idle; "Submitting…", "Import successful: {id}", "A pattern with this name already
+  exists.", and "Import failed: {message}" shown for respective states.
+- Added four vi.mock calls (client, parser, validator, payload builder) and a synchronous
+  SyncFileReader stub to ImportPatternOverlay.test.tsx.
+- Added three component tests: success outcome, 409 conflict outcome, non-conflict failure
+  outcome — all using mocked API responses and the FileReader stub.
+
+Verification passed:
+- npm run build — exit 0 (98 tests, clean bundle)
+- npm run test — 98/98 passed (14 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 pre-existing warnings in patternFileParser.ts)
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 19 — Refresh workspace state after successful import
+
