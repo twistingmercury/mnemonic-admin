@@ -5,11 +5,19 @@ import {
   type ValidationError,
 } from "./patternFileValidation";
 import { buildPatternPayload } from "./patternPayloadBuilder";
-import type { CreatePatternBody } from "../patterns/api/types";
+import { createPattern } from "../patterns/api/client";
+import type { ApiError, CreatePatternBody } from "../patterns/api/types";
 
 interface ImportPatternOverlayProps {
   onClose: () => void;
 }
+
+type SubmitState =
+  | { status: "idle" }
+  | { status: "submitting" }
+  | { status: "success"; patternId: string }
+  | { status: "conflict" }
+  | { status: "error"; message: string };
 
 export function ImportPatternOverlay({ onClose }: ImportPatternOverlayProps) {
   const [parseError, setParseError] = useState<string | null>(null);
@@ -19,6 +27,9 @@ export function ImportPatternOverlay({ onClose }: ImportPatternOverlayProps) {
   const [builtPayload, setBuiltPayload] = useState<CreatePatternBody | null>(
     null,
   );
+  const [submitState, setSubmitState] = useState<SubmitState>({
+    status: "idle",
+  });
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -26,6 +37,7 @@ export function ImportPatternOverlay({ onClose }: ImportPatternOverlayProps) {
     setBuiltPayload(null);
     setParseError(null);
     setValidationErrors(null);
+    setSubmitState({ status: "idle" });
 
     if (!file) return;
 
@@ -49,6 +61,24 @@ export function ImportPatternOverlay({ onClose }: ImportPatternOverlayProps) {
       setBuiltPayload(buildPatternPayload(result.value));
     };
     reader.readAsText(file);
+  }
+
+  async function handleSubmit() {
+    if (!builtPayload) return;
+
+    setSubmitState({ status: "submitting" });
+
+    try {
+      const pattern = await createPattern(builtPayload);
+      setSubmitState({ status: "success", patternId: pattern.id });
+    } catch (err) {
+      const apiError = err as ApiError;
+      if (apiError.status === 409) {
+        setSubmitState({ status: "conflict" });
+      } else {
+        setSubmitState({ status: "error", message: apiError.message });
+      }
+    }
   }
 
   return (
@@ -103,8 +133,23 @@ export function ImportPatternOverlay({ onClose }: ImportPatternOverlayProps) {
           </section>
 
           <section aria-label="Import outcome">
-            {builtPayload !== null && (
-              <p>Ready to import: {builtPayload.name}</p>
+            {builtPayload !== null && submitState.status === "idle" && (
+              <>
+                <p>Ready to import: {builtPayload.name}</p>
+                <button type="button" onClick={handleSubmit}>
+                  Submit
+                </button>
+              </>
+            )}
+            {submitState.status === "submitting" && <p>Submitting…</p>}
+            {submitState.status === "success" && (
+              <p>Import successful: {submitState.patternId}</p>
+            )}
+            {submitState.status === "conflict" && (
+              <p>A pattern with this name already exists.</p>
+            )}
+            {submitState.status === "error" && (
+              <p>Import failed: {submitState.message}</p>
             )}
           </section>
         </div>
