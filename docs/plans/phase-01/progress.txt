@@ -560,3 +560,32 @@ Verification passed:
 Next cycle: Cycle 20 — Add loading, empty, and error states across browse, search,
   detail, and import flows
 
+---
+
+## Cycle 20 — Add loading, empty, and error states across browse, search, detail, and import flows
+Date: 2026-03-18
+
+Summary:
+- Updated PatternResultsList.tsx: replaced generic "Loading…" / "Failed to load
+  patterns" / "No patterns found" with mode-specific messages. Browse mode: "Loading
+  patterns…", "Failed to load patterns", "No patterns found". Search mode:
+  "Searching…", "Search failed", "No results for your search".
+- Updated PatternResultsList.test.tsx: added searchPatterns to the vi.mock, updated
+  browse loading assertion to match new message, and added a "search mode" describe
+  block with three tests (search loading, search empty, search error).
+- Updated ImportPatternOverlay.tsx: added explicit idle state message "Select a
+  Markdown file to import." in the Import outcome section when builtPayload is null
+  and submitState is idle.
+- Updated ImportPatternOverlay.test.tsx: added idle state test (no file selected,
+  idle message visible, submit button absent) and validation error test (mock
+  validatePatternFile returning errors, assert error message rendered).
+
+Verification passed:
+- npm run build — exit 0 (283 kB bundle)
+- npm run test — 106/106 passed (15 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 pre-existing warnings in patternFileParser.ts)
+- npx prettier --check . — all files clean
+
+Next cycle: Cycle 21 — Audit and fill test coverage gaps
+

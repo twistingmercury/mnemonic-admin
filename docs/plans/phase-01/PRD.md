@@ -296,7 +296,7 @@ for this phase.
 - Verify: `npm run build && npm run test`
 - Done: A successful import returns the user to a refreshed workspace without losing context unnecessarily, and component tests for post-import refresh pass.
 
-- [ ] **Cycle 20 - Add loading, empty, and error states across browse, search, detail, and import flows**: Make failure and waiting states explicit instead of implied.
+- [x] **Cycle 20 - Add loading, empty, and error states across browse, search, detail, and import flows**: Make failure and waiting states explicit instead of implied.
 - Agent: `react software engineer`
 - Files: `src/features/workspace/PatternWorkspace.tsx`, `src/features/patterns/components/PatternResultsList.tsx`, `src/features/patterns/components/PatternDetailPane.tsx`, `src/features/import/ImportPatternOverlay.tsx`
 - Steps:
