@@ -75,3 +75,15 @@ Date: 2026-03-18
 ### Notes
 - `filters.agent_id` reference in `PatternResultsList` retained — Cycle 6 renames it to `agent`
 - Search mode still uses `useQuery` (search results are not paginated)
+
+---
+Cycle 4 - Adapt search results for the chunk-level search response
+Date: 2026-03-18
+
+Summary:
+- Updated PatternResultRow to support a discriminated union prop: `mode: "browse"` renders PatternListItem fields; `mode: "search"` renders SearchResultItem fields (pattern_name, section_title, similarity as "85% match").
+- Removed the `as unknown as PatternListItem[]` cast from PatternResultsList. Replaced with explicitly typed branches: search path derives SearchResultItem[], browse path derives PatternListItem[]. Each branch passes the correct mode prop to PatternResultRow. Empty-state checks operate on the correctly typed arrays.
+- Key for search rows uses `${result.pattern_id}-${result.chunk_index}` to handle multiple chunks from the same pattern.
+- Added 4 new tests in PatternResultsList.test.tsx: renders pattern_name, renders section_title, renders similarity as percentage, calls onSelect with pattern_id.
+
+Verification: npx tsc --noEmit (0 errors), npx eslint (0 errors), npx prettier --check (clean), npm run test (148/148 passed).

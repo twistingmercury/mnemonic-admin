@@ -96,7 +96,7 @@ The second release must correct all contract mismatches so the frontend correctl
 - Verify: `npm run build && npm run test`
 - Done: The browse list correctly handles cursor-based pagination and renders only fields present in `PatternListItem`, and component tests pass.
 
-- [ ] **Cycle 4 - Adapt search results for the chunk-level search response**: Update `PatternResultsList` and `PatternResultRow` to render search results correctly.
+- [x] **Cycle 4 - Adapt search results for the chunk-level search response**: Update `PatternResultsList` and `PatternResultRow` to render search results correctly.
 - Agent: `react software engineer`
 - Files: `src/features/patterns/components/PatternResultsList.tsx`, `src/features/patterns/components/PatternResultRow.tsx`, `src/features/patterns/components/PatternResultsList.test.tsx`
 - Steps:
