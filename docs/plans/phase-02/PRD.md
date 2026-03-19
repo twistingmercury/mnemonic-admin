@@ -107,7 +107,7 @@ The second release must correct all contract mismatches so the frontend correctl
 - Verify: `npm run build && npm run test`
 - Done: Search results render chunk-level matches with `pattern_name`, `section_title`, and `similarity`, and component tests pass.
 
-- [ ] **Cycle 5 - Correct the pattern detail view for real field names and graph structure**: Update detail rendering to read from the correct nested API structures.
+- [x] **Cycle 5 - Correct the pattern detail view for real field names and graph structure**: Update detail rendering to read from the correct nested API structures.
 - Agent: `react software engineer`
 - Files: `src/features/patterns/components/PatternMetadata.tsx`, `src/features/patterns/components/PatternMetadata.test.tsx`, `src/features/patterns/components/PatternDetailPane.tsx`, `src/features/patterns/components/PatternDetailPane.test.tsx`
 - Steps:

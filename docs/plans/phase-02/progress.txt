@@ -87,3 +87,20 @@ Summary:
 - Added 4 new tests in PatternResultsList.test.tsx: renders pattern_name, renders section_title, renders similarity as percentage, calls onSelect with pattern_id.
 
 Verification: npx tsc --noEmit (0 errors), npx eslint (0 errors), npx prettier --check (clean), npm run test (148/148 passed).
+
+---
+## Cycle 5 — Correct the pattern detail view for real field names and graph structure
+Date: 2026-03-18
+
+### Work completed
+- `PatternMetadata.tsx` already rendered `enrichment_status` and conditionally showed optional `version`, `language`, `domain` — no changes required.
+- Updated `PatternDetailPane.tsx` related-pattern rendering to display `relationship` and `strength` alongside `name` (e.g., "uses · 0.8").
+- Added one new test to `PatternDetailPane.test.tsx`: "renders relationship and strength for related patterns" — asserts that `relationship` and `strength` values appear in the DOM.
+
+### Verification
+- `npm run build`: clean
+- `npm run test`: 149/149 passed (1 new test)
+- `npx tsc --noEmit`: 0 errors
+- `npx eslint src/`: 0 errors (pre-existing warnings in patternFileParser.ts)
+- `npx prettier --check .`: clean
+- `npm audit --audit-level=high`: 0 vulnerabilities
