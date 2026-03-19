@@ -3,7 +3,11 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { PatternResultsList } from "./PatternResultsList";
-import type { PaginatedResponse, PatternListItem } from "../api/types";
+import type {
+  PaginatedResponse,
+  PatternListItem,
+  SearchResultItem,
+} from "../api/types";
 
 vi.mock("../api/client", () => ({
   listPatterns: vi.fn(),
@@ -252,6 +256,87 @@ describe("PatternResultsList", () => {
       await waitFor(() => {
         expect(screen.getByText("Search failed")).toBeInTheDocument();
       });
+    });
+
+    const MOCK_SEARCH_RESULT: SearchResultItem = {
+      pattern_id: "pattern-1",
+      pattern_name: "Auth Pattern",
+      section_title: "Overview",
+      similarity: 0.85,
+      content: "Some content",
+      chunk_index: 0,
+      language: "english",
+      domain: "auth",
+      entity_type: "pattern",
+      tags: ["auth"],
+    };
+
+    function makeSearchResponse(results: SearchResultItem[]) {
+      return {
+        metadata: {
+          query: "auth",
+          search_duration_ms: 42,
+          total_candidates: 10,
+        },
+        results,
+      };
+    }
+
+    it("renders pattern_name from search results", async () => {
+      mockSearchPatterns.mockResolvedValue(
+        makeSearchResponse([MOCK_SEARCH_RESULT]),
+      );
+
+      renderWithQuery(<PatternResultsList query="auth" />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Auth Pattern")).toBeInTheDocument();
+      });
+    });
+
+    it("renders section_title from search results", async () => {
+      mockSearchPatterns.mockResolvedValue(
+        makeSearchResponse([MOCK_SEARCH_RESULT]),
+      );
+
+      renderWithQuery(<PatternResultsList query="auth" />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Overview")).toBeInTheDocument();
+      });
+    });
+
+    it("renders similarity as a percentage", async () => {
+      mockSearchPatterns.mockResolvedValue(
+        makeSearchResponse([MOCK_SEARCH_RESULT]),
+      );
+
+      renderWithQuery(<PatternResultsList query="auth" />);
+
+      await waitFor(() => {
+        expect(screen.getByText("85% match")).toBeInTheDocument();
+      });
+    });
+
+    it("calls onSelect with pattern_id when a search result row is clicked", async () => {
+      mockSearchPatterns.mockResolvedValue(
+        makeSearchResponse([MOCK_SEARCH_RESULT]),
+      );
+      const handleSelect = vi.fn();
+      const user = userEvent.setup();
+
+      renderWithQuery(
+        <PatternResultsList query="auth" onSelect={handleSelect} />,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("Auth Pattern")).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole("button", { name: /Auth Pattern/ }));
+
+      expect(handleSelect).toHaveBeenCalledOnce();
+      expect(handleSelect).toHaveBeenCalledWith("pattern-1");
     });
   });
 });

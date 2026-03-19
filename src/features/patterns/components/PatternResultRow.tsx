@@ -1,16 +1,44 @@
-import type { PatternListItem } from "../api/types";
+import type { PatternListItem, SearchResultItem } from "../api/types";
 
-interface PatternResultRowProps {
-  pattern: PatternListItem;
-  onSelect: (id: string) => void;
-  selected: boolean;
-}
+type PatternResultRowProps =
+  | {
+      mode: "browse";
+      pattern: PatternListItem;
+      onSelect: (id: string) => void;
+      selected: boolean;
+    }
+  | {
+      mode: "search";
+      result: SearchResultItem;
+      onSelect: (id: string) => void;
+      selected: boolean;
+    };
 
-export function PatternResultRow({
-  pattern,
-  onSelect,
-  selected,
-}: PatternResultRowProps) {
+export function PatternResultRow(props: PatternResultRowProps) {
+  const { mode, onSelect, selected } = props;
+
+  if (mode === "search") {
+    const { result } = props;
+    const similarityPct = Math.round(result.similarity * 100);
+
+    return (
+      <li
+        role="button"
+        aria-pressed={selected}
+        onClick={() => onSelect(result.pattern_id)}
+        className={`cursor-pointer border-b p-3 text-sm ${selected ? "font-semibold" : ""}`}
+      >
+        <div>
+          <span>{result.pattern_name}</span>
+        </div>
+        {result.section_title && <div>{result.section_title}</div>}
+        <div>{similarityPct}% match</div>
+      </li>
+    );
+  }
+
+  const { pattern } = props;
+
   return (
     <li
       role="button"

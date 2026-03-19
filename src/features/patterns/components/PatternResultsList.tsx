@@ -3,7 +3,7 @@ import { listPatterns, searchPatterns } from "../api/client";
 import { PatternResultRow } from "./PatternResultRow";
 import type { FilterState } from "./PatternFilters";
 import { EMPTY_FILTERS } from "./PatternFilters";
-import type { PatternListItem } from "../api/types";
+import type { PatternListItem, SearchResultItem } from "../api/types";
 
 interface PatternResultsListProps {
   query?: string;
@@ -66,27 +66,47 @@ export function PatternResultsList({
     );
   }
 
-  const patterns: PatternListItem[] = isSearchMode
-    ? ((searchResult.data?.results ?? []) as unknown as PatternListItem[])
-    : (browseResult.data?.pages.flatMap((p) => p.data) ?? []);
+  if (isSearchMode) {
+    const searchResults: SearchResultItem[] = searchResult.data?.results ?? [];
 
-  if (patterns.length === 0) {
+    if (searchResults.length === 0) {
+      return <div className="p-3 text-sm">No results for your search</div>;
+    }
+
     return (
-      <div className="p-3 text-sm">
-        {isSearchMode ? "No results for your search" : "No patterns found"}
+      <div className="flex flex-1 flex-col overflow-auto">
+        <ul>
+          {searchResults.map((result) => (
+            <PatternResultRow
+              key={`${result.pattern_id}-${result.chunk_index}`}
+              mode="search"
+              result={result}
+              onSelect={onSelect ?? (() => {})}
+              selected={selectedId === result.pattern_id}
+            />
+          ))}
+        </ul>
       </div>
     );
   }
 
+  const browsePatterns: PatternListItem[] =
+    browseResult.data?.pages.flatMap((p) => p.data) ?? [];
+
+  if (browsePatterns.length === 0) {
+    return <div className="p-3 text-sm">No patterns found</div>;
+  }
+
   const lastPage = browseResult.data?.pages[browseResult.data.pages.length - 1];
-  const hasMore = !isSearchMode && (lastPage?.has_more ?? false);
+  const hasMore = lastPage?.has_more ?? false;
 
   return (
     <div className="flex flex-1 flex-col overflow-auto">
       <ul>
-        {patterns.map((pattern) => (
+        {browsePatterns.map((pattern) => (
           <PatternResultRow
             key={pattern.id}
+            mode="browse"
             pattern={pattern}
             onSelect={onSelect ?? (() => {})}
             selected={selectedId === pattern.id}
