@@ -86,38 +86,16 @@ export function ImportPatternOverlay({
   }
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          maxWidth: "560px",
-          padding: "24px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: "16px",
-          }}
-        >
+    <div className="fixed inset-0 flex items-center justify-center">
+      <div className="relative w-full max-w-[560px] border p-6">
+        <div className="mb-4 flex items-center justify-between">
           <h2>Import Pattern</h2>
           <button type="button" onClick={onClose} aria-label="Close">
             Close
           </button>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="flex flex-col gap-4">
           <input
             type="file"
             accept=".md"

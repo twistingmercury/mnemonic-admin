@@ -31,7 +31,7 @@ export function PatternWorkspace() {
   }
 
   const leftPane = (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <div className="flex h-full flex-col">
       <PatternSearchForm onSearch={setActiveQuery} activeQuery={activeQuery} />
       <PatternFilters
         filters={activeFilters}

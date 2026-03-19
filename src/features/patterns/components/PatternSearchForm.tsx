@@ -18,15 +18,15 @@ export function PatternSearchForm({
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit} style={{ display: "flex", width: "100%" }}>
+    <div className="p-3">
+      <form onSubmit={handleSubmit} className="flex w-full">
         <input
           type="text"
           aria-label="Search patterns"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Search patterns…"
-          style={{ flex: 1 }}
+          className="min-w-0 flex-1"
         />
         <button type="submit">Search</button>
       </form>
