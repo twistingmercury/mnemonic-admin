@@ -1,0 +1,137 @@
+## Cycle 1 — Realign API types with the Swagger specification
+Date: 2026-03-18
+
+### Work completed
+- Rewrote `src/features/patterns/api/types.ts` to match the real Mnemonic API contract:
+  - `PatternListItem`: removed `version`, `enriched`, `language`, `domain`, `entity_type`; added `enrichment_status: string`
+  - `PatternDetail`: moved optional `version?`, `language?`, `domain?`, `entity_type?` here; added `enriched_at?`, `enrichment_error?`, `graph: { related_patterns, concepts }`; removed top-level `related_patterns: RelatedPattern[]`
+  - `RelatedPattern`: replaced `description`/`similarity_score?` with `relationship: string`/`strength: number`
+  - `AgentAssociation`: removed `agent_id`; made `agent_name: string` required
+  - `ChunkSummary`: removed `token_count?` (internal normalized shape kept as `{ id, index, summary }`)
+  - Added `SearchResultItem` type for chunk-level search results
+  - `PaginatedResponse<T>`: replaced offset pagination with cursor-based (`limit`, `cursor`, `has_more`, `next_cursor`)
+  - `SearchResponse`: replaced with `{ metadata: { query, search_duration_ms, total_candidates }, results: SearchResultItem[] }`
+  - `BrowseParams`: replaced `page`/`page_size` with `limit?`, `cursor?`, `search?`, `entity_type?`
+  - `SearchParams`: replaced `page`/`page_size`/`agent_id` with `limit?`, `threshold?`, `agent?`
+- Updated test fixtures in `client.test.ts` to match all new type shapes; updated URL-param tests
+- Fixed cascading TypeScript errors in components and tests: `PatternResultRow`, `PatternResultsList`, `PatternDetailPane`, `PatternMetadata`, `PatternSupportSections`, plus `PatternContent.test.tsx` and `ImportPatternOverlay.test.tsx`
+
+### Verification
+- `npx tsc --noEmit`: clean (0 errors)
+- `npm run test`: 140/140 passed
+- `npm run build`: clean
+- `npx eslint src/`: 0 errors
+- `npx prettier --check .`: all formatted
+- `npm audit --audit-level=high`: 0 vulnerabilities
+
+### Notes
+- `FilterState` retains `agent_id` — Cycle 6 renames it to `agent`
+- Search results cast to `PatternListItem[]` as a temporary shim — Cycle 4 separates browse vs search rendering
+- `client.ts` not modified; `buildQuery` forwards params directly, so type changes are sufficient
+
+## Cycle 2 — Update API client functions to use correct parameters and response shapes
+Date: 2026-03-18
+
+### Work completed
+- Added local `ListApiResponse<T>` interface in `client.ts` with nested `pagination` object matching real API wire format
+- Converted `listPatterns` to `async` function that unwraps nested `pagination` object into flat `PaginatedResponse<PatternListItem>`
+- `searchPatterns` required no changes — `SearchParams` already uses `agent`, `limit`, `threshold` after Cycle 1, and `SearchResponse` shape already matches API
+- Updated `client.test.ts`:
+  - Added `LIST_API_RESPONSE` fixture (nested pagination — real API wire format)
+  - Updated all `listPatterns` success-path mocks to serve `LIST_API_RESPONSE`
+  - Added new test "unwraps nested pagination into flat PaginatedResponse"
+  - All existing tests remain unchanged and passing
+
+### Verification
+- `npm run build`: clean
+- `npm run test`: 141/141 passed (one new test added)
+- `npx tsc --noEmit`: 0 errors
+- `npx eslint src/`: 0 errors (pre-existing warnings in patternFileParser.ts are not errors)
+- `npx prettier --check .`: clean
+- `npm audit --audit-level=high`: 0 vulnerabilities
+
+## Cycle 3 — Adapt the browse list for cursor-based pagination and trimmed list item shape
+Date: 2026-03-18
+
+### Work completed
+- Replaced `useQuery` with `useInfiniteQuery` in `PatternResultsList` for browse mode
+- `getNextPageParam` reads `has_more` and `next_cursor` from each page to drive cursor pagination
+- Results accumulated via `pages.flatMap(p => p.data)`
+- Added "Load More" button rendered when the last page's `has_more` is true; button disabled while fetching next page
+- `PatternResultRow` required no changes — it already renders only `name`, `description`, and `tags` (the trimmed `PatternListItem` shape)
+- Added three new tests to `PatternResultsList.test.tsx`:
+  - "Load More" button visible when `has_more: true`
+  - "Load More" button absent when `has_more: false`
+  - Clicking "Load More" fetches next page and appends results
+
+### Verification
+- `npm run build`: clean
+- `npm run test`: 144/144 passed (3 new tests)
+- `npx tsc --noEmit`: 0 errors
+- `npx eslint src/`: 0 errors (pre-existing warnings in patternFileParser.ts)
+- `npx prettier --check .`: clean
+- `npm audit --audit-level=high`: 0 vulnerabilities
+
+### Notes
+- `filters.agent_id` reference in `PatternResultsList` retained — Cycle 6 renames it to `agent`
+- Search mode still uses `useQuery` (search results are not paginated)
+
+---
+Cycle 4 - Adapt search results for the chunk-level search response
+Date: 2026-03-18
+
+Summary:
+- Updated PatternResultRow to support a discriminated union prop: `mode: "browse"` renders PatternListItem fields; `mode: "search"` renders SearchResultItem fields (pattern_name, section_title, similarity as "85% match").
+- Removed the `as unknown as PatternListItem[]` cast from PatternResultsList. Replaced with explicitly typed branches: search path derives SearchResultItem[], browse path derives PatternListItem[]. Each branch passes the correct mode prop to PatternResultRow. Empty-state checks operate on the correctly typed arrays.
+- Key for search rows uses `${result.pattern_id}-${result.chunk_index}` to handle multiple chunks from the same pattern.
+- Added 4 new tests in PatternResultsList.test.tsx: renders pattern_name, renders section_title, renders similarity as percentage, calls onSelect with pattern_id.
+
+Verification: npx tsc --noEmit (0 errors), npx eslint (0 errors), npx prettier --check (clean), npm run test (148/148 passed).
+
+---
+## Cycle 5 — Correct the pattern detail view for real field names and graph structure
+Date: 2026-03-18
+
+### Work completed
+- `PatternMetadata.tsx` already rendered `enrichment_status` and conditionally showed optional `version`, `language`, `domain` — no changes required.
+- Updated `PatternDetailPane.tsx` related-pattern rendering to display `relationship` and `strength` alongside `name` (e.g., "uses · 0.8").
+- Added one new test to `PatternDetailPane.test.tsx`: "renders relationship and strength for related patterns" — asserts that `relationship` and `strength` values appear in the DOM.
+
+### Verification
+- `npm run build`: clean
+- `npm run test`: 149/149 passed (1 new test)
+- `npx tsc --noEmit`: 0 errors
+- `npx eslint src/`: 0 errors (pre-existing warnings in patternFileParser.ts)
+- `npx prettier --check .`: clean
+- `npm audit --audit-level=high`: 0 vulnerabilities
+
+---
+## Cycle 6 — Update the agent filter parameter and PatternFilters component
+Date: 2026-03-18
+
+### Work completed
+- Renamed `agent_id` to `agent` in `FilterState` interface and `EMPTY_FILTERS` constant (`filterTypes.ts`)
+- Updated all `agent_id` references in `PatternFilters.tsx` (active filter display, input value, onChange handler)
+- Updated `PatternResultsList.tsx` to pass `filters.agent` (was `filters.agent_id`) to `searchPatterns`
+- Updated `PatternFilters.test.tsx`: test description, assertion key, and fixture field all updated to use `agent`
+
+### Verification
+- `npx tsc --noEmit`: 0 errors
+- `npm run test`: 149/149 passed
+- `npm run build`: clean
+- `npx eslint src/`: 0 errors (pre-existing warnings only)
+- `npx prettier --check .`: clean
+
+---
+## Cycle 7 — Add a Vite dev proxy entry to the README and document the .env.local pattern
+Date: 2026-03-18
+
+### Work completed
+- Updated the "Environment Configuration" section in `README.md`:
+  - Added paragraph explaining that `vite.config.ts` proxies `/v1/api` → `http://localhost:8080` to prevent CORS errors.
+  - Changed the `.env.local` example to use `VITE_API_BASE_URL=/v1/api` (path only) as the recommended local dev value.
+  - Added note that the full URL form bypasses the proxy and may cause CORS errors.
+- Added a new "Troubleshooting" subsection under "Development Considerations" with three common API connectivity issues and their solutions.
+
+### Verification
+- `test -f README.md`: passed

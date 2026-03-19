@@ -1,0 +1,682 @@
+## Cycle 1 — Scaffold the frontend app with the approved toolchain
+Date: 2026-03-18
+
+Summary:
+- Created the Vite React TypeScript application from scratch.
+- Added package.json with all ADR-specified dependencies: React 19, TypeScript,
+  Vite, TanStack Query, React Router, Tailwind CSS, Vitest, React Testing
+  Library, Playwright, ESLint (typescript-eslint, react-hooks, react-refresh,
+  security plugins), and Prettier.
+- Added baseline scripts: dev, build, test, e2e.
+- Created minimal app root (src/main.tsx, src/app/App.tsx) with QueryClientProvider
+  and BrowserRouter shell.
+- Added src/test-setup.ts importing @testing-library/jest-dom.
+- Added Tailwind CSS config (tailwind.config.js, postcss.config.js), ESLint flat
+  config (eslint.config.js), Prettier config (.prettierrc), and TypeScript
+  configs (tsconfig.json, tsconfig.app.json, tsconfig.node.json).
+
+Verification passed:
+- npm install && npm run build && npm run test — all exit 0
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 2 — Create the Docker-first build scaffold
+  (build/Dockerfile, build/build.sh)
+
+---
+
+## Cycle 2 — Create the Docker-first build scaffold
+Date: 2026-03-18
+
+Summary:
+- Added build/Dockerfile: multi-stage build using node:20-alpine for the builder
+  stage (npm ci + npm run build) and nginx:1.27-alpine as the runner stage
+  serving dist on port 80.
+- Added build/build.sh: POSIX bash script with set -euo pipefail; derives
+  PROJECT_ROOT from script location; runs docker build with the repo root as
+  context and tags the image mnemonic-admin:latest.
+- Set build/build.sh as executable (chmod +x).
+
+Verification passed:
+- test -f build/Dockerfile && test -f build/build.sh — both files present
+
+Next cycle: Cycle 3 — Add the CI workflow definition
+  (.github/workflows/frontend-ci.yaml)
+
+---
+
+## Cycle 3 — Add the CI workflow definition
+Date: 2026-03-18
+
+Summary:
+- Created .github/workflows/frontend-ci.yaml.
+- Workflow triggers on push and pull_request (all branches).
+- Single build job checks out the repo and runs ./build/build.sh.
+- No inline build logic — all Docker build steps remain in the script.
+
+Verification passed:
+- test -f .github/workflows/frontend-ci.yaml — file present
+
+Next cycle: Cycle 4 — Add routing, query client setup, and global app providers
+  (src/main.tsx, src/app/App.tsx, src/app/router.tsx, src/app/providers.tsx, src/app/App.test.tsx)
+
+---
+
+## Cycle 4 — Add routing, query client setup, and global app providers
+Date: 2026-03-18
+
+Summary:
+- Extracted provider setup into src/app/providers.tsx: AppProviders wraps
+  children with QueryClientProvider (staleTime: 60000, retry: 1).
+- Extracted routing into src/app/router.tsx: AppRouter renders BrowserRouter +
+  Routes with one workspace route at / (WorkspacePlaceholder).
+- Refactored src/app/App.tsx to compose AppProviders around AppRouter; removed
+  all inline provider and route logic.
+- Added src/app/App.test.tsx: component test that mounts <App /> and asserts the
+  heading renders without runtime errors.
+
+Verification passed:
+- npm run build — exit 0
+- npm run test — 1 test, exit 0
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+
+Next cycle: Cycle 5 — Implement the workspace shell and top-level split layout
+  (src/app/App.tsx, src/features/workspace/PatternWorkspace.tsx,
+   src/features/workspace/WorkspaceHeader.tsx,
+   src/features/workspace/WorkspaceLayout.tsx,
+   src/features/workspace/WorkspaceHeader.test.tsx)
+
+---
+
+## Cycle 5 — Implement the workspace shell and top-level split layout
+Date: 2026-03-18
+
+Summary:
+- Created src/features/workspace/WorkspaceLayout.tsx: flex split-pane layout
+  accepting header, leftPane, and rightPane props; left pane is w-96 overflow-auto,
+  right pane is flex-1 overflow-auto; outer container is flex h-screen flex-col.
+- Created src/features/workspace/WorkspaceHeader.tsx: header with "Mnemonic Admin"
+  heading and "Import Pattern" button; exposes onImportClick prop.
+- Created src/features/workspace/PatternWorkspace.tsx: composes WorkspaceLayout and
+  WorkspaceHeader; left/right panes are empty for now.
+- Updated src/app/router.tsx: replaced WorkspacePlaceholder with PatternWorkspace.
+- Created src/features/workspace/WorkspaceHeader.test.tsx: tests that the heading
+  renders and the Import Pattern button is present.
+
+Verification passed:
+- npm run build — exit 0
+- npm run test — 3 tests (App.test.tsx + WorkspaceHeader.test.tsx), exit 0
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 6 — Create typed Mnemonic API models and client functions
+  (src/features/patterns/api/types.ts, src/features/patterns/api/client.ts,
+   src/features/patterns/api/client.test.ts)
+
+---
+
+## Cycle 6 — Create typed Mnemonic API models and client functions
+Date: 2026-03-18
+
+Summary:
+- Created src/features/patterns/api/types.ts: all domain types including
+  PatternListItem, PatternDetail, AgentAssociation, RelatedPattern,
+  ChunkSummary, PaginatedResponse<T>, SearchResponse, BrowseParams,
+  SearchParams, CreatePatternBody, ProblemDetail, and ApiError.
+- Created src/features/patterns/api/client.ts: five exported client functions
+  (listPatterns, searchPatterns, getPattern, getPatternChunks, createPattern)
+  plus toApiError helper. BASE_URL reads VITE_API_BASE_URL env with fallback.
+  Private apiFetch<T> handles happy path and error normalization. Problem-detail
+  errors normalized to ApiError shape.
+- Created src/features/patterns/api/client.test.ts: 20 tests covering toApiError
+  (5 cases), each client function success and error paths, query param
+  construction, POST body, and URL encoding. Uses vi.spyOn(globalThis, 'fetch').
+
+Verification passed:
+- npm run build — exit 0 (23 tests total, 260 kB bundle)
+- npm run test — 23/23 passed
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 7 — Load and render the default browse list in the discovery rail
+  (src/features/workspace/PatternWorkspace.tsx,
+   src/features/patterns/components/PatternResultsList.tsx,
+   src/features/patterns/components/PatternResultRow.tsx,
+   src/features/patterns/components/PatternResultsList.test.tsx)
+
+---
+
+## Cycle 7 — Load and render the default browse list in the discovery rail
+Date: 2026-03-18
+
+Summary:
+- Created src/features/patterns/components/PatternResultRow.tsx: renders a single
+  PatternListItem as a <li> with name, description, tags as <span> elements, and
+  a compact secondary metadata line (language · domain · entity_type · version).
+- Created src/features/patterns/components/PatternResultsList.tsx: uses useQuery
+  with key ['patterns'] to call listPatterns(); renders "Loading…", error, empty
+  state, and a <ul> of PatternResultRow elements.
+- Created src/features/patterns/components/PatternResultsList.test.tsx: 4 tests
+  covering rows from mock data, empty state, loading state, and error state.
+  Each test uses its own QueryClient with retry: false; listPatterns mocked via
+  vi.mock.
+- Updated src/features/workspace/PatternWorkspace.tsx: leftPane now renders
+  <PatternResultsList /> instead of null.
+
+Verification passed:
+- npm run build — exit 0 (27 tests, 272 kB bundle)
+- npm run test — 27/27 passed
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 8 — Add the semantic search form and search submission flow
+  (src/features/patterns/components/PatternSearchForm.tsx,
+   src/features/workspace/PatternWorkspace.tsx,
+   src/features/patterns/components/PatternSearchForm.test.tsx)
+
+---
+
+## Cycle 8 — Add the semantic search form and search submission flow
+Date: 2026-03-18
+
+Summary:
+- Created src/features/patterns/components/PatternSearchForm.tsx: controlled form
+  with labelled text input and submit button; accepts onSearch and activeQuery props;
+  shows active query when non-empty; trims whitespace before calling onSearch.
+- Created src/features/patterns/components/PatternSearchForm.test.tsx: 6 tests
+  covering input rendering, submit via button click, submit via Enter key, active
+  query visibility, active query region absence when empty, and whitespace trimming.
+- Updated src/features/patterns/components/PatternResultsList.tsx: added optional
+  query prop; when non-empty calls searchPatterns({ q: query }) with key
+  ["patterns", "search", query] and maps SearchResponse.results; falls back to
+  listPatterns() behavior unchanged.
+- Updated src/features/workspace/PatternWorkspace.tsx: added activeQuery state;
+  composes PatternSearchForm above PatternResultsList in leftPane; wires onSearch
+  to setActiveQuery and passes activeQuery as query to PatternResultsList.
+
+Verification passed:
+- npm run build — exit 0 (33 tests, 273 kB bundle)
+- npm run test — 33/33 passed (5 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 9 — Add lightweight search filters for phase-1 fields
+  (src/features/patterns/components/PatternFilters.tsx,
+   src/features/workspace/PatternWorkspace.tsx,
+   src/features/patterns/components/PatternFilters.test.tsx)
+
+---
+
+## Cycle 9 — Add lightweight search filters for phase-1 fields
+Date: 2026-03-18
+
+Summary:
+- Created src/features/patterns/components/filterTypes.ts: FilterState interface
+  (tags, language, domain, agent_id as strings) and EMPTY_FILTERS constant;
+  extracted to a separate file to satisfy react-refresh/only-export-components.
+- Created src/features/patterns/components/PatternFilters.tsx: four controlled
+  text inputs (tags, language, domain, agent); calls onFiltersChange on each
+  keystroke; renders aria-label="active filters" region when any filter is set.
+- Updated src/features/patterns/components/PatternResultsList.tsx: added optional
+  filters prop (defaults to EMPTY_FILTERS); filter values passed to listPatterns
+  and searchPatterns; included in query keys for correct refetch on filter change.
+- Updated src/features/workspace/PatternWorkspace.tsx: added activeFilters state;
+  renders PatternFilters between search form and results list; passes activeFilters
+  to PatternResultsList.
+- Created src/features/patterns/components/PatternFilters.test.tsx: 7 tests
+  covering input rendering, per-field onChange, active filter visibility, and
+  hidden state when all filters are empty.
+
+Verification passed:
+- npm run build — exit 0 (40 tests, bundle clean)
+- npm run test — 40/40 passed
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 10 — Add result selection and detail-pane loading
+  (src/features/workspace/PatternWorkspace.tsx,
+   src/features/patterns/components/PatternDetailPane.tsx,
+   src/features/patterns/components/PatternDetailPane.test.tsx)
+
+---
+
+## Cycle 10 — Add result selection and detail-pane loading
+Date: 2026-03-18
+
+Summary:
+- Created src/features/patterns/components/PatternDetailPane.tsx: accepts patternId
+  (string | null); renders empty state "Select a pattern to view details" when null;
+  uses useQuery with key ["pattern", patternId] to call getPattern() when set;
+  shows loading, error, and success (name + content) states.
+- Created src/features/patterns/components/PatternDetailPane.test.tsx: 3 tests
+  covering null patternId empty state, non-null patternId triggering getPattern and
+  rendering the pattern name on success, and error state rendering.
+- Updated src/features/patterns/components/PatternResultRow.tsx: added onSelect and
+  selected props; li is now role="button" with aria-pressed, onClick, cursor:pointer,
+  and fontWeight:bold when selected.
+- Updated src/features/patterns/components/PatternResultsList.tsx: added optional
+  onSelect and selectedId props; passed through to each PatternResultRow; defaults
+  to no-op to preserve existing test compatibility.
+- Updated src/features/workspace/PatternWorkspace.tsx: added selectedId state (null);
+  wired onSelect={setSelectedId} and selectedId into PatternResultsList; passed
+  PatternDetailPane as rightPane.
+
+Verification passed:
+- npm run build — exit 0 (43 tests, bundle clean)
+- npm run test — 43/43 passed
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+
+Next cycle: Cycle 11 — Render the core pattern detail view
+  (src/features/patterns/components/PatternDetailPane.tsx,
+   src/features/patterns/components/PatternMetadata.tsx,
+   src/features/patterns/components/PatternContent.tsx,
+   src/features/patterns/components/PatternMetadata.test.tsx,
+   src/features/patterns/components/PatternContent.test.tsx)
+
+---
+
+## Cycle 11 — Render the core pattern detail view
+Date: 2026-03-18
+
+Summary:
+- Created src/features/patterns/components/PatternMetadata.tsx: renders all
+  metadata fields in a <dl> grid — name, description, language, domain,
+  entity_type, version, enrichment status (Yes/No), tags, created_at, and
+  updated_at. Optional fields are omitted when absent.
+- Created src/features/patterns/components/PatternContent.tsx: renders the full
+  pattern content in a <section aria-label="Pattern content"> wrapping a <pre>
+  with whiteSpace: pre-wrap to preserve formatting.
+- Refactored src/features/patterns/components/PatternDetailPane.tsx: replaced
+  inline name/content rendering with <PatternMetadata> and <PatternContent>;
+  added a !data guard after loading/error guards.
+- Created src/features/patterns/components/PatternMetadata.test.tsx: 11 tests
+  covering each metadata field, enriched Yes/No, tags list, timestamps, and
+  optional fields absent when undefined.
+- Created src/features/patterns/components/PatternContent.test.tsx: 4 tests
+  covering content text, section element, accessible label, and multiline
+  content preservation.
+
+Verification passed:
+- npm run build — exit 0 (58 tests, bundle clean)
+- npm run test — 58/58 passed
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 12 — Add chunk summaries and agent association sections
+  (src/features/patterns/components/PatternDetailPane.tsx,
+   src/features/patterns/components/PatternSupportSections.tsx,
+   src/features/patterns/components/PatternSupportSections.test.tsx)
+
+---
+
+## Cycle 12 — Add chunk summaries and agent association sections
+Date: 2026-03-18
+
+Summary:
+- Created src/features/patterns/components/PatternSupportSections.tsx: pure
+  presentational component accepting chunks (ChunkSummary[]) and
+  agentAssociations (AgentAssociation[]). Renders chunk summaries as an ordered
+  list (index + summary text) and agent associations as an unordered list
+  (agent_name or agent_id + relevance). Both sections show an empty state
+  message when arrays are empty.
+- Updated src/features/patterns/components/PatternDetailPane.tsx: added a second
+  useQuery for getPatternChunks(patternId); passes chunks and agent_associations
+  as props to PatternSupportSections at the bottom of the detail pane.
+- Created src/features/patterns/components/PatternSupportSections.test.tsx: 7
+  tests covering chunk text, chunk index, chunks empty state, agent name render,
+  agent_id fallback, relevance render, and agents empty state.
+
+Verification passed:
+- npm run build — exit 0 (65 tests, bundle clean)
+- npm run test — 65/65 passed
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 13 — Implement related-pattern pivoting inside the detail pane
+
+---
+
+## Cycle 13 — Implement related-pattern pivoting inside the detail pane
+Date: 2026-03-18
+
+Summary:
+- Updated PatternDetailPane.tsx: added optional onSelectRelated prop; added
+  "Related Patterns" section below PatternSupportSections that renders each
+  related pattern as a button (name + description); clicking calls
+  onSelectRelated?.(id); empty state shows "No related patterns".
+- Updated PatternWorkspace.tsx: passes onSelectRelated={setSelectedId} to
+  PatternDetailPane; activeQuery and activeFilters are separate state and
+  remain untouched on pivot.
+- Updated PatternDetailPane.test.tsx: expanded vi.mock to cover getPatternChunks;
+  added test that clicking a related pattern button calls onSelectRelated with
+  the correct id; added test that the onSelectRelated and search callbacks are
+  fully independent (search state is not disturbed on pivot).
+
+Verification passed:
+- npm run build — exit 0 (278 kB bundle)
+- npm run test — 67/67 passed (10 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 14 — Build the import overlay shell and file picker
+
+---
+
+## Cycle 14 — Build the import overlay shell and file picker
+Date: 2026-03-18
+
+Summary:
+- Created src/features/import/ImportPatternOverlay.tsx: fixed full-screen
+  backdrop overlay with centered dialog; "Import Pattern" heading; close button
+  wired to onClose prop; single-file input (accept=".md", aria-label="Select
+  Markdown file"); empty placeholder sections for validation feedback and import
+  outcome. Layout-only styles; no decorative styling.
+- Updated src/features/workspace/PatternWorkspace.tsx: added showImport state;
+  handleImportClick sets showImport(true); ImportPatternOverlay rendered as a
+  sibling to WorkspaceLayout when showImport is true.
+- Created src/features/import/ImportPatternOverlay.test.tsx: 5 tests covering
+  heading render, close button calls onClose, file input with accept=".md",
+  validation feedback placeholder present, import outcome placeholder present.
+
+Verification passed:
+- npm run build — exit 0 (72 tests, clean bundle)
+- npm run test — 72/72 passed (11 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero lint errors
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 15 — Parse Markdown pattern files and extract frontmatter and body
+
+---
+
+## Cycle 15 — Parse Markdown pattern files and extract frontmatter and body
+Date: 2026-03-18
+
+Summary:
+- Created src/features/import/patternFileParser.ts: zero-dependency parser returning
+  ParseResult discriminated union (ok: true/false). Handles simple key:value scalars,
+  block sequences (- item lines), and inline sequences ([a, b]). Single- and
+  double-quoted values are unquoted. Returns ParseError with a descriptive message
+  when the opening --- delimiter is missing or the closing --- delimiter is absent.
+- Updated src/features/import/ImportPatternOverlay.tsx: added parseError and parsedFile
+  state; wired FileReader.readAsText onChange handler to the file input; calls
+  parsePatternFile on file content; surfaces parse error message inside the existing
+  "Validation feedback" section when non-null.
+- Created src/features/import/patternFileParser.test.ts: 7 pure unit tests covering
+  valid simple frontmatter, block arrays, inline arrays, missing opening delimiter,
+  missing closing delimiter, empty body, and quoted string unescaping.
+
+Verification passed:
+- npm run build — exit 0 (281 kB bundle)
+- npm run test — 79/79 passed (12 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 false-positive security warnings for dynamic key writes, all expected)
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 16 — Add local validation for required pattern-file rules
+
+---
+
+## Cycle 16 — Add local validation for required pattern-file rules
+Date: 2026-03-18
+
+Summary:
+- Created src/features/import/patternFileValidation.ts: pure validation module
+  exporting ValidationError, ValidationResult, and validatePatternFile. Checks
+  required frontmatter fields (name, description), presence of ## Overview in
+  body, and presence of at least one [//]: pattern decorator. Collects all
+  failures before returning (no short-circuit).
+- Updated src/features/import/ImportPatternOverlay.tsx: added validationErrors
+  state; after a successful parse, validation runs immediately; parse errors and
+  validation errors are mutually exclusive in the Validation feedback section;
+  validation errors rendered as a <ul>/<li> list; parsedFile is only set when
+  both parse and validation pass.
+- Created src/features/import/patternFileValidation.test.ts: 7 pure unit tests
+  covering valid file acceptance, missing name, missing description, empty name,
+  missing ## Overview, missing [//]: pattern decorator, and all-failures-collected
+  case.
+
+Verification passed:
+- npm run build — exit 0 (281 kB bundle)
+- npm run test — 86/86 passed (13 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 pre-existing warnings in patternFileParser.ts)
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 17 — Translate parsed files into the pattern create payload
+
+---
+
+## Cycle 17 — Translate parsed files into the pattern create payload
+Date: 2026-03-18
+
+Summary:
+- Created src/features/import/patternPayloadBuilder.ts: pure function
+  buildPatternPayload(parsed: ParsedPatternFile): CreatePatternBody. Maps name,
+  description, body (as content), tags (string or string[] → string[]), optional
+  language/domain/entity_type, and agents (string or string[]) to
+  agent_associations with agent_name and default relevance 0.8, matching the
+  shell loader behavior in mnemonic-patterns/install/load.sh.
+- Updated src/features/patterns/api/types.ts: CreatePatternBody.agent_associations
+  updated to { agent_id?: string; agent_name?: string; relevance: number }[] to
+  match the shell loader's write path (agent_name, not agent_id).
+- Updated src/features/import/ImportPatternOverlay.tsx: replaced parsedFile state
+  with builtPayload (CreatePatternBody | null); calls buildPatternPayload after
+  parse+validation pass; renders "Ready to import: {name}" in the Import outcome
+  section when builtPayload is set.
+- Created src/features/import/patternPayloadBuilder.test.ts: 9 unit tests covering
+  required field mapping, tags as array, tags as string, optional fields included,
+  optional fields omitted, agents converted with relevance 0.8, single agent
+  string, agents absent, and content unchanged.
+
+Verification passed:
+- npm run build — exit 0 (282 kB bundle)
+- npm run test — 95/95 passed (14 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 pre-existing warnings in patternFileParser.ts)
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 18 — Submit imports and render success, conflict, and failure outcomes
+
+---
+
+## Cycle 18 — Submit imports and render success, conflict, and failure outcomes
+Date: 2026-03-18
+
+Summary:
+- Added SubmitState discriminated union (idle | submitting | success | conflict | error)
+  to ImportPatternOverlay.tsx.
+- Added handleSubmit async function: sets submitting state, calls createPattern(builtPayload),
+  sets success with patternId on resolve, sets conflict on 409, sets error with message on
+  other failures.
+- Updated import outcome section: Submit button shown when builtPayload is ready and state
+  is idle; "Submitting…", "Import successful: {id}", "A pattern with this name already
+  exists.", and "Import failed: {message}" shown for respective states.
+- Added four vi.mock calls (client, parser, validator, payload builder) and a synchronous
+  SyncFileReader stub to ImportPatternOverlay.test.tsx.
+- Added three component tests: success outcome, 409 conflict outcome, non-conflict failure
+  outcome — all using mocked API responses and the FileReader stub.
+
+Verification passed:
+- npm run build — exit 0 (98 tests, clean bundle)
+- npm run test — 98/98 passed (14 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 pre-existing warnings in patternFileParser.ts)
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 19 — Refresh workspace state after successful import
+
+---
+
+## Cycle 19 — Refresh workspace state after successful import
+Date: 2026-03-18
+
+Summary:
+- Added onImportSuccess?: (patternId: string) => void prop to ImportPatternOverlay.
+  On success, renders "Import successful: {id}" with two buttons: "Close" (calls
+  onClose) and "View Pattern" (calls onImportSuccess(patternId) then onClose).
+- Updated PatternWorkspace.tsx: uses useQueryClient; added handleImportSuccess
+  which invalidates ["patterns"] queries to trigger list refresh, sets selectedId
+  to the new patternId, and closes the overlay. activeQuery and activeFilters are
+  untouched.
+- Created src/features/workspace/PatternWorkspace.test.tsx: 3 tests — successful
+  import invalidates patterns query, successful import closes overlay, successful
+  import preserves activeQuery.
+
+Verification passed:
+- npm run build — exit 0 (101 tests, 283 kB bundle)
+- npm run test — 101/101 passed (15 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors
+- npx prettier --check . — all files clean
+
+Next cycle: Cycle 20 — Add loading, empty, and error states across browse, search,
+  detail, and import flows
+
+---
+
+## Cycle 20 — Add loading, empty, and error states across browse, search, detail, and import flows
+Date: 2026-03-18
+
+Summary:
+- Updated PatternResultsList.tsx: replaced generic "Loading…" / "Failed to load
+  patterns" / "No patterns found" with mode-specific messages. Browse mode: "Loading
+  patterns…", "Failed to load patterns", "No patterns found". Search mode:
+  "Searching…", "Search failed", "No results for your search".
+- Updated PatternResultsList.test.tsx: added searchPatterns to the vi.mock, updated
+  browse loading assertion to match new message, and added a "search mode" describe
+  block with three tests (search loading, search empty, search error).
+- Updated ImportPatternOverlay.tsx: added explicit idle state message "Select a
+  Markdown file to import." in the Import outcome section when builtPayload is null
+  and submitState is idle.
+- Updated ImportPatternOverlay.test.tsx: added idle state test (no file selected,
+  idle message visible, submit button absent) and validation error test (mock
+  validatePatternFile returning errors, assert error message rendered).
+
+Verification passed:
+- npm run build — exit 0 (283 kB bundle)
+- npm run test — 106/106 passed (15 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 pre-existing warnings in patternFileParser.ts)
+- npx prettier --check . — all files clean
+
+Next cycle: Cycle 21 — Audit and fill test coverage gaps
+
+---
+
+## Cycle 21 — Audit and fill test coverage gaps
+Date: 2026-03-18
+
+Summary:
+- Reviewed all 15 test files under src/ against their source modules.
+- Added 32 new test cases across 9 test files targeting edge conditions,
+  error branches, and boundary inputs not covered in prior cycles.
+- patternFileParser.test.ts: +6 cases (empty frontmatter, skipped lines,
+  empty inline sequences, block-sequence edge cases, body with no leading newline).
+- patternFileValidation.test.ts: +4 cases (whitespace-only description,
+  non-string name, empty body, isolated field checks).
+- patternPayloadBuilder.test.ts: +3 cases (empty tags array, empty agents
+  array, absent tags key omitted).
+- client.test.ts: +8 cases (listPatterns with params, no-param URL shape,
+  URL-encoded chunk id, Content-Type header, toApiError edge cases).
+- ImportPatternOverlay.test.tsx: +5 cases (parse error display, ready-to-import
+  message, submitting state, View Pattern callback, file reset after success).
+- WorkspaceHeader.test.tsx: +1 case (onImportClick called on button click).
+- PatternSearchForm.test.tsx: +1 case (whitespace-only input trims to empty).
+- PatternResultsList.test.tsx: +3 cases (onSelect called, aria-pressed states).
+- PatternContent.test.tsx: +1 case (empty string content renders without throw).
+
+Verification passed:
+- npm run test — 136/136 passed (15 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 pre-existing warnings)
+- npx prettier --check . — all files clean
+- npm audit --audit-level=high — zero vulnerabilities
+
+Next cycle: Cycle 22 — Add UI and end-to-end tests for the main workspace flows
+
+---
+
+## Cycle 22 — Add UI and end-to-end tests for the main workspace flows
+Date: 2026-03-18
+
+Summary:
+- Updated PatternResultsList and PatternDetailPane vi.mock stubs in
+  PatternWorkspace.test.tsx to forward key props as data-* attributes and
+  expose buttons that fire onSelect and onSelectRelated callbacks.
+- Added new describe block "PatternWorkspace — browse and search flows" with
+  4 UI tests: initial browse state, search submission propagation, result
+  selection triggering detail pane update, and related-pattern pivoting while
+  preserving search query state.
+- Created playwright.config.ts with testDir ./tests/e2e, Chromium project,
+  baseURL http://localhost:5173, and webServer block for npm run dev.
+- Created tests/e2e/fixtures/valid-pattern.md: valid frontmatter, ## Overview,
+  and [//]: pattern decorator.
+- Created tests/e2e/fixtures/invalid-pattern.md: valid frontmatter but missing
+  ## Overview and [//]: pattern decorator.
+- Created tests/e2e/pattern-workspace.spec.ts: two Playwright tests using route
+  interception (no real API required). "successful import path" covers file
+  upload → ready state → submit → success message. "validation failure path"
+  covers invalid file → validation errors visible → Submit button absent.
+- Updated vite.config.ts: added tests/e2e/** to Vitest exclude list to prevent
+  Playwright specs from being picked up by the unit test runner.
+
+Verification passed:
+- npm run test — 140/140 passed (15 test files)
+- npx tsc --noEmit — zero type errors
+- npx eslint src/ — zero errors (6 pre-existing warnings)
+- npx prettier --check . — all files clean
+- npm run e2e — 2/2 Playwright tests passed
+
+Next cycle: Cycle 23 — Write contributor-facing setup and usage documentation
+
+---
+
+## Cycle 23 — Write contributor-facing setup and usage documentation
+Date: 2026-03-18
+
+Summary:
+- Updated README.md with four targeted edits:
+  - Removed the stale "scaffold not built yet" note from the Quick Start section.
+  - Added an Environment Configuration section documenting VITE_API_BASE_URL,
+    the default fallback (http://localhost:8080/v1/api), and .env.local override.
+  - Fixed the E2E test description: tests use Playwright route interception and
+    do not require a live API; corrected the earlier claim that a running API
+    was required for tests.
+  - Strengthened the Markdown Pattern Import section with explicit limitations:
+    one file at a time, .md only, required frontmatter fields (name, description),
+    required body sections (## Overview, [//]: pattern decorator), agent mapping
+    behavior (agent_name, default relevance 0.8), and validation scope note.
+
+Verification passed:
+- test -f README.md — file present
+
+Next cycle: PRD is complete. All 23 cycles marked done.
+

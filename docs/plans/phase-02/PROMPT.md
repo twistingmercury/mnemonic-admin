@@ -18,10 +18,11 @@ You will be given:
 
 The active PRD for this project is expected to be:
 
-- `docs/plans/phase-01/PRD.md`
+- `docs/plans/phase-02/PRD.md`
 
 The primary supporting documents are:
 
+- `docs/plans/phase-02/mnemonic-api-v1.json` — **authoritative API contract; read this first for any cycle touching types, client functions, or API parameters**
 - `docs/adr/0001-frontend-stack.md`
 - `docs/design/tech-stack-justification.md`
 - `docs/design/pattern-ui-usecase-diagram.md`
@@ -29,9 +30,9 @@ The primary supporting documents are:
 
 The canonical progress log path for this repository is:
 
-- `docs/plans/phase-01/progress.txt`
+- `docs/plans/phase-02/progress.txt`
 
-If `docs/plans/phase-01/progress.txt` does not exist, create it when completing
+If `docs/plans/phase-02/progress.txt` does not exist, create it when completing
 the first cycle.
 
 ## Non-Negotiable Rules
@@ -42,11 +43,12 @@ the first cycle.
 4. Do not combine multiple cycles into one run.
 5. Search the repository before editing. Do not assume code or files are
    missing.
-6. Respect the cycle’s `Agent`, `Files`, `Steps`, and `Verify` fields.
+6. Respect the cycle's `Agent`, `Files`, `Steps`, and `Verify` fields.
 7. Keep changes scoped to the selected cycle.
 8. Run verification before marking the cycle complete.
 9. Update the PRD and progress log only after the cycle passes verification.
 10. Stop after finishing that one cycle.
+11. Derive all API type shapes, parameter names, and response structures from `docs/plans/phase-02/mnemonic-api-v1.json`. Do not rely on existing frontend types or component code as a reference for what the API returns.
 
 ## Repo-Specific Build and Test Rules
 
@@ -75,11 +77,8 @@ Do not introduce host-only workflow assumptions as the primary build contract.
 - Every cycle that produces or modifies source files under `src/` must include
   tests for the behavior it introduces. Tests must pass before the cycle is
   marked complete. Do not defer test writing to a later cycle.
-- Phase 1 UI is functional only. Apply only the layout styles needed to arrange
-  elements on the page (flex, grid, width, height, overflow, positioning). Do
-  not add decorative styling: no colors, no background fills, no styled borders,
-  no shadows, no typography choices beyond browser defaults. Black text on a
-  white background is the target aesthetic for this phase.
+- Phase 2 is API contract alignment only. Do not add decorative styling, new
+  features, or architectural changes.
 - Do not add unrelated abstractions, state libraries, or framework changes.
 - Do not rewrite the approved architecture during implementation.
 
@@ -87,7 +86,7 @@ Do not introduce host-only workflow assumptions as the primary build contract.
 
 ### Step 1: Read the PRD and select the cycle
 
-- Open `docs/plans/phase-01/PRD.md`.
+- Open `docs/plans/phase-02/PRD.md`.
 - Find the first unchecked `- [ ]` cycle under `## Implementation Plan`.
 - Extract:
   - cycle title
@@ -101,6 +100,7 @@ If no unchecked cycle exists, stop and report that the PRD is complete.
 
 ### Step 2: Read supporting context
 
+- If the selected cycle touches types, client functions, or API parameters, read `docs/plans/phase-02/mnemonic-api-v1.json` and extract the exact request and response schemas for every endpoint the cycle affects. Do not infer API shapes from existing frontend code — the spec is the source of truth.
 - Read the design and stack documents relevant to the selected cycle.
 - Read the progress log if it exists.
 - Search the codebase before editing anything.
@@ -114,13 +114,13 @@ If no unchecked cycle exists, stop and report that the PRD is complete.
 
 ### Step 4: Delegate or execute
 
-- If your runtime supports subagents, delegate to the cycle’s named `Agent`.
+- If your runtime supports subagents, delegate to the cycle's named `Agent`.
 - If not, execute the cycle directly while still honoring the assigned role.
 - Keep the implementation bounded to the selected cycle.
 
 ### Step 5: Verify
 
-Run the cycle’s `Verify` command exactly as written unless it is impossible in
+Run the cycle's `Verify` command exactly as written unless it is impossible in
 the current environment. In addition, run the following baseline checks after
 every cycle that produces or modifies source files under `src/`:
 
@@ -133,13 +133,13 @@ every cycle that produces or modifies source files under `src/`:
    tests introduced by the current cycle
 5. `npm audit --audit-level=high` — no high or critical vulnerabilities
 
-These baseline checks are in addition to, not instead of, the cycle’s declared
+These baseline checks are in addition to, not instead of, the cycle's declared
 `Verify` command.
 
 Verification order:
 
 1. targeted checks for the touched code
-2. the cycle’s declared `Verify`
+2. the cycle's declared `Verify`
 3. baseline checks above
 4. broader checks only if required by the change
 
@@ -165,7 +165,7 @@ the cycle:
 After the commit succeeds:
 
 - change the selected PRD cycle from `- [ ]` to `- [x]`
-- append a concise entry to `docs/plans/phase-01/progress.txt`
+- append a concise entry to `docs/plans/phase-02/progress.txt`
 - stage and commit the updated PRD and progress log as a follow-up commit
 
 Each progress entry should include:
@@ -196,6 +196,7 @@ Do not continue into the next cycle.
 - replacing Docker-first verification with host-only assumptions
 - embedding complex build logic directly in GitHub Actions YAML
 - refactoring architecture that the PRD did not ask to change
+- inferring API shapes from existing frontend types instead of reading `mnemonic-api-v1.json`
 
 ## Output Contract
 

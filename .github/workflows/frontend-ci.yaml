@@ -1,0 +1,70 @@
+name: Frontend CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "src/**"
+      - "build/**"
+      - ".github/workflows/frontend-ci.yaml"
+      - "index.html"
+      - "package*.json"
+      - "vite.config.ts"
+      - "tailwind.config.js"
+      - "postcss.config.js"
+      - "tsconfig*.json"
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - "src/**"
+      - "build/**"
+      - ".github/workflows/frontend-ci.yaml"
+      - "index.html"
+      - "package*.json"
+      - "vite.config.ts"
+      - "tailwind.config.js"
+      - "postcss.config.js"
+      - "tsconfig*.json"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build
+        run: ./build/build.sh
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push image tags
+        run: |
+          VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo 'dev')
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+            docker push ghcr.io/twistingmercury/mnemonic-admin:latest
+            docker push ghcr.io/twistingmercury/mnemonic-admin:${VERSION}
+          else
+            docker tag ghcr.io/twistingmercury/mnemonic-admin:latest ghcr.io/twistingmercury/mnemonic-admin:latest-dev
+            docker tag ghcr.io/twistingmercury/mnemonic-admin:${VERSION} ghcr.io/twistingmercury/mnemonic-admin:${VERSION}-dev
+            docker push ghcr.io/twistingmercury/mnemonic-admin:latest-dev
+            docker push ghcr.io/twistingmercury/mnemonic-admin:${VERSION}-dev
+          fi

@@ -29,13 +29,18 @@ The UI connects directly to the Mnemonic API at `http://localhost:8080/v1/api`. 
 
 ### Markdown Pattern Import
 
-To import a pattern, prepare a Markdown file with:
+To import a pattern, prepare a single Markdown file (`.md` only) with the following required structure:
 
-- YAML frontmatter (with metadata such as domain, tags, agent association)
-- An `## Overview` section
+**Frontmatter:**
+- `name` — unique pattern identifier
+- `description` — brief summary of the pattern
+- Additional optional fields: `domain`, `tags`, `agents` (maps to `agent_name` with default relevance of 0.8)
+
+**Body:**
+- `## Overview` section (required)
 - At least one `[//]: pattern` decorator
 
-Use the import overlay in the UI to select and submit the file. The application validates the file locally before submitting it to the API.
+The import overlay in the UI accepts only one file at a time. The application validates the file structure locally in the browser before submitting it to the API. Server-side validation may still reject files that pass client-side checks.
 
 ---
 
@@ -77,8 +82,6 @@ The primary workspace uses a fixed split-pane design. Users browse patterns on t
 
 ### Quick Start
 
-> **Note:** The frontend scaffold has not been built yet. The commands below reflect the intended setup once Cycle 1 of the implementation plan is complete.
-
 Ensure Node.js 18+ and Docker are installed.
 
 1. Clone the repository
@@ -88,6 +91,37 @@ Ensure Node.js 18+ and Docker are installed.
 5. Open the browser to the URL shown in the terminal (usually `http://localhost:5173`)
 
 The development server includes hot module reloading. Changes to component files, styles, and configuration files are reflected immediately.
+
+### Environment Configuration
+
+The Vite development server automatically proxies all requests to `/v1/api` to `http://localhost:8080`. This proxy is configured in `vite.config.ts` and prevents CORS errors during development by allowing the browser to make requests that appear to come from the same origin.
+
+The API client reads the API base URL from the `VITE_API_BASE_URL` environment variable. To use the development proxy, create a `.env.local` file in the project root (not committed to version control) and set:
+
+```
+VITE_API_BASE_URL=/v1/api
+```
+
+This routes all API requests through the Vite proxy to `http://localhost:8080`.
+
+To bypass the proxy and hit the API directly from your local machine, set the full URL instead:
+
+```
+VITE_API_BASE_URL=http://localhost:8080/v1/api
+```
+
+However, direct requests may trigger CORS errors depending on the API's CORS configuration. The proxy-based approach (using just the path) is recommended for local development.
+
+### Troubleshooting
+
+**API is unreachable:**
+Verify that the Mnemonic API is running at `http://localhost:8080`. Start it before running the development server.
+
+**CORS errors in the browser console:**
+Check that `VITE_API_BASE_URL` is set to `/v1/api` (not the full URL) in `.env.local`. This ensures requests route through the Vite dev proxy, which avoids CORS issues.
+
+**Dev server is not running:**
+Start the development server with `npm run dev` before opening the browser. The server must be running on `http://localhost:5173` (or the port shown in the terminal) for the proxy to work.
 
 ### Building & Running
 
@@ -127,7 +161,7 @@ Tests focus on parser logic, API client behavior, and component interaction. Tes
 npm run e2e
 ```
 
-E2E tests verify critical user flows: pattern search, selection, related-pattern pivoting, and the import workflow. These tests assume the Mnemonic API is running and reachable.
+E2E tests verify critical user flows: pattern search, selection, related-pattern pivoting, and the import workflow. These tests use Playwright route interception and do not require a running Mnemonic API. The live API is only needed to run the application in development.
 
 ### Stack
 

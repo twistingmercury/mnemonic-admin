@@ -32,6 +32,10 @@
       "mcp__mnemonic__find_related_patterns",
       "mcp__mnemonic__get_pattern",
       "mcp__mnemonic__search_patterns",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "mcp__plugin_playwright_playwright__browser_click",
       "Skill(arch-docs)",
       "Skill(code-review)",
       "Skill(docker-first-ci)",
@@ -41,12 +45,6 @@
       "Skill(shell-script)",
       "Skill(update-config)",
       "WebFetch(domain:localhost)"
-    ],
-    "deny": [
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(rm -rf:*)"
     ]
   }
 }
