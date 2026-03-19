@@ -39,12 +39,12 @@ const MOCK_DETAIL: PatternDetail = {
   domain: "backend",
   entity_type: "service",
   version: "1.0.0",
-  enriched: true,
+  enrichment_status: "complete",
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-02T00:00:00Z",
   content: "# Alpha Pattern\n\nThis is the pattern content.",
   agent_associations: [],
-  related_patterns: [],
+  graph: { related_patterns: [], concepts: [] },
 };
 
 describe("PatternDetailPane", () => {
@@ -88,13 +88,17 @@ describe("PatternDetailPane", () => {
   it("calls onSelectRelated with the related pattern id when a related pattern button is clicked", async () => {
     const detailWithRelated: PatternDetail = {
       ...MOCK_DETAIL,
-      related_patterns: [
-        {
-          id: "related-xyz",
-          name: "Beta Pattern",
-          description: "A related pattern",
-        },
-      ],
+      graph: {
+        related_patterns: [
+          {
+            id: "related-xyz",
+            name: "Beta Pattern",
+            relationship: "uses",
+            strength: 0.8,
+          },
+        ],
+        concepts: [],
+      },
     };
     mockGetPattern.mockResolvedValue(detailWithRelated);
 
@@ -119,13 +123,17 @@ describe("PatternDetailPane", () => {
   it("clicking a related pattern does not call a separate search handler", async () => {
     const detailWithRelated: PatternDetail = {
       ...MOCK_DETAIL,
-      related_patterns: [
-        {
-          id: "related-xyz",
-          name: "Beta Pattern",
-          description: "A related pattern",
-        },
-      ],
+      graph: {
+        related_patterns: [
+          {
+            id: "related-xyz",
+            name: "Beta Pattern",
+            relationship: "uses",
+            strength: 0.8,
+          },
+        ],
+        concepts: [],
+      },
     };
     mockGetPattern.mockResolvedValue(detailWithRelated);
 

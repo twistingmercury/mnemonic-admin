@@ -1,23 +1,21 @@
 // ─── Domain models ────────────────────────────────────────────────────────────
 
 export interface AgentAssociation {
-  agent_id: string;
-  agent_name?: string;
+  agent_name: string;
   relevance: number;
 }
 
 export interface RelatedPattern {
   id: string;
   name: string;
-  description: string;
-  similarity_score?: number;
+  relationship: string;
+  strength: number;
 }
 
 export interface ChunkSummary {
   id: string;
   index: number;
   summary: string;
-  token_count?: number;
 }
 
 // ─── Pattern shapes ───────────────────────────────────────────────────────────
@@ -27,54 +25,80 @@ export interface PatternListItem {
   name: string;
   description: string;
   tags: string[];
-  language?: string;
-  domain?: string;
-  entity_type?: string;
-  version: string;
-  enriched: boolean;
+  enrichment_status: string;
   created_at: string;
   updated_at: string;
 }
 
 export interface PatternDetail extends PatternListItem {
   content: string;
+  version?: string;
+  language?: string;
+  domain?: string;
+  entity_type?: string;
+  enriched_at?: string;
+  enrichment_error?: string | null;
   agent_associations: AgentAssociation[];
-  related_patterns: RelatedPattern[];
+  graph: {
+    related_patterns: RelatedPattern[];
+    concepts: { name: string }[];
+  };
+}
+
+// ─── Search ───────────────────────────────────────────────────────────────────
+
+export interface SearchResultItem {
+  pattern_id: string;
+  pattern_name: string;
+  section_title: string;
+  similarity: number;
+  content: string;
+  chunk_index: number;
+  language: string;
+  domain: string;
+  entity_type: string;
+  tags: string[];
 }
 
 // ─── Pagination & responses ───────────────────────────────────────────────────
 
 export interface PaginatedResponse<T> {
   data: T[];
-  total: number;
-  page: number;
-  page_size: number;
+  limit: number;
+  cursor: string;
+  has_more: boolean;
+  next_cursor: string;
 }
 
 export interface SearchResponse {
-  results: PatternListItem[];
-  total: number;
-  query: string;
+  metadata: {
+    query: string;
+    search_duration_ms: number;
+    total_candidates: number;
+  };
+  results: SearchResultItem[];
 }
 
 // ─── Request params ───────────────────────────────────────────────────────────
 
 export interface BrowseParams {
-  page?: number;
-  page_size?: number;
+  limit?: number;
+  cursor?: string;
+  search?: string;
   tags?: string;
   language?: string;
   domain?: string;
+  entity_type?: string;
 }
 
 export interface SearchParams {
   q: string;
+  limit?: number;
+  threshold?: number;
   tags?: string;
   language?: string;
   domain?: string;
-  agent_id?: string;
-  page?: number;
-  page_size?: number;
+  agent?: string;
 }
 
 export interface CreatePatternBody {
@@ -86,7 +110,6 @@ export interface CreatePatternBody {
   domain?: string;
   entity_type?: string;
   agent_associations?: {
-    agent_id?: string;
     agent_name?: string;
     relevance: number;
   }[];

@@ -10,28 +10,13 @@ export function PatternSupportSections({
   agentAssociations,
 }: PatternSupportSectionsProps) {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "16px",
-      }}
-    >
+    <div className="flex flex-col gap-4">
       <section aria-label="Chunk summaries">
         <h3>Chunk Summaries</h3>
         {chunks.length === 0 ? (
           <p>No chunk summaries available.</p>
         ) : (
-          <ol
-            style={{
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-            }}
-          >
+          <ol className="flex list-none flex-col gap-2 p-0">
             {chunks.map((chunk) => (
               <li key={chunk.id}>
                 <span>Chunk {chunk.index}:</span> {chunk.summary}
@@ -46,19 +31,10 @@ export function PatternSupportSections({
         {agentAssociations.length === 0 ? (
           <p>No agent associations available.</p>
         ) : (
-          <ul
-            style={{
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-            }}
-          >
+          <ul className="flex list-none flex-col gap-2 p-0">
             {agentAssociations.map((assoc) => (
-              <li key={assoc.agent_id}>
-                <span>{assoc.agent_name ?? assoc.agent_id}</span>
+              <li key={assoc.agent_name}>
+                <span>{assoc.agent_name}</span>
                 {" — relevance: "}
                 {assoc.relevance}
               </li>

@@ -203,12 +203,11 @@ describe("ImportPatternOverlay", () => {
         description: "",
         content: "",
         tags: [],
-        version: "1",
-        enriched: false,
+        enrichment_status: "pending",
         created_at: "",
         updated_at: "",
         agent_associations: [],
-        related_patterns: [],
+        graph: { related_patterns: [], concepts: [] },
       });
     });
 
@@ -219,12 +218,11 @@ describe("ImportPatternOverlay", () => {
         description: "A test",
         content: "body",
         tags: [],
-        version: "1",
-        enriched: false,
+        enrichment_status: "pending",
         created_at: "2026-01-01T00:00:00Z",
         updated_at: "2026-01-01T00:00:00Z",
         agent_associations: [],
-        related_patterns: [],
+        graph: { related_patterns: [], concepts: [] },
       };
       vi.mocked(client.createPattern).mockResolvedValueOnce(mockPattern);
 
@@ -277,12 +275,11 @@ describe("ImportPatternOverlay", () => {
         description: "A test",
         content: "body",
         tags: [],
-        version: "1",
-        enriched: false,
+        enrichment_status: "pending",
         created_at: "2026-01-01T00:00:00Z",
         updated_at: "2026-01-01T00:00:00Z",
         agent_associations: [],
-        related_patterns: [],
+        graph: { related_patterns: [], concepts: [] },
       };
       vi.mocked(client.createPattern).mockResolvedValueOnce(mockPattern);
 
@@ -316,12 +313,11 @@ describe("ImportPatternOverlay", () => {
         description: "A test",
         content: "body",
         tags: [],
-        version: "1",
-        enriched: false,
+        enrichment_status: "pending",
         created_at: "2026-01-01T00:00:00Z",
         updated_at: "2026-01-01T00:00:00Z",
         agent_associations: [],
-        related_patterns: [],
+        graph: { related_patterns: [], concepts: [] },
       };
       vi.mocked(client.createPattern).mockResolvedValueOnce(mockPattern);
 

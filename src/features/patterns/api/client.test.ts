@@ -13,7 +13,6 @@ import type {
   PaginatedResponse,
   PatternDetail,
   PatternListItem,
-  SearchResponse,
 } from "./types";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -49,8 +48,7 @@ const PATTERN_ITEM: PatternListItem = {
   name: "Test Pattern",
   description: "A test pattern",
   tags: ["go", "test"],
-  version: "1",
-  enriched: true,
+  enrichment_status: "complete",
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-02T00:00:00Z",
 };
@@ -58,35 +56,50 @@ const PATTERN_ITEM: PatternListItem = {
 const PATTERN_DETAIL: PatternDetail = {
   ...PATTERN_ITEM,
   content: "Pattern content here",
-  agent_associations: [
-    { agent_id: "agent-1", agent_name: "Agent One", relevance: 0.9 },
-  ],
-  related_patterns: [
-    {
-      id: "rel-1",
-      name: "Related",
-      description: "A related pattern",
-      similarity_score: 0.75,
-    },
-  ],
+  agent_associations: [{ agent_name: "Agent One", relevance: 0.9 }],
+  graph: {
+    related_patterns: [
+      { id: "rel-1", name: "Related", relationship: "uses", strength: 0.75 },
+    ],
+    concepts: [],
+  },
 };
 
 const PAGINATED: PaginatedResponse<PatternListItem> = {
   data: [PATTERN_ITEM],
-  total: 1,
-  page: 1,
-  page_size: 20,
+  limit: 20,
+  cursor: "",
+  has_more: false,
+  next_cursor: "",
 };
 
-const SEARCH_RESPONSE: SearchResponse = {
-  results: [PATTERN_ITEM],
-  total: 1,
-  query: "test query",
+const SEARCH_RESPONSE = {
+  metadata: {
+    query: "test query",
+    search_duration_ms: 10,
+    total_candidates: 1,
+  },
+  results: [
+    {
+      pattern_id: "abc-123",
+      pattern_name: "Test Pattern",
+      section_title: "Introduction",
+      similarity: 0.9,
+      content: "Pattern content here",
+      chunk_index: 0,
+      language: "go",
+      domain: "backend",
+      entity_type: "service",
+      tags: ["go", "test"],
+    },
+  ],
 };
 
-const CHUNKS: ChunkSummary[] = [
-  { id: "chunk-1", index: 0, summary: "First chunk", token_count: 128 },
-];
+const CHUNKS_API_RESPONSE = {
+  chunks: [{ chunk_index: 0, section_title: "First chunk" }],
+};
+
+const CHUNKS: ChunkSummary[] = [{ id: "0", index: 0, summary: "First chunk" }];
 
 // ─── toApiError ───────────────────────────────────────────────────────────────
 
@@ -183,13 +196,13 @@ describe("listPatterns", () => {
 
   it("appends query params to the request URL", async () => {
     mockFetch(200, PAGINATED);
-    await listPatterns({ page: 2, page_size: 10, language: "go" });
+    await listPatterns({ limit: 10, cursor: "abc", language: "go" });
     const [url] = vi.mocked(globalThis.fetch).mock.calls[0] as [
       string,
       ...unknown[],
     ];
-    expect(url).toContain("page=2");
-    expect(url).toContain("page_size=10");
+    expect(url).toContain("limit=10");
+    expect(url).toContain("cursor=abc");
     expect(url).toContain("language=go");
   });
 
@@ -254,9 +267,9 @@ describe("searchPatterns", () => {
       tags: "security",
       language: "go",
       domain: "backend",
-      agent_id: "agent-1",
-      page: 1,
-      page_size: 5,
+      agent: "agent-1",
+      limit: 5,
+      threshold: 0.7,
     });
     const [url] = vi.mocked(globalThis.fetch).mock.calls[0] as [
       string,
@@ -266,9 +279,9 @@ describe("searchPatterns", () => {
     expect(url).toContain("tags=security");
     expect(url).toContain("language=go");
     expect(url).toContain("domain=backend");
-    expect(url).toContain("agent_id=agent-1");
-    expect(url).toContain("page=1");
-    expect(url).toContain("page_size=5");
+    expect(url).toContain("agent=agent-1");
+    expect(url).toContain("limit=5");
+    expect(url).toContain("threshold=0.7");
   });
 
   it("throws ApiError on non-2xx", async () => {
@@ -326,7 +339,7 @@ describe("getPatternChunks", () => {
   afterEach(() => vi.restoreAllMocks());
 
   it("returns chunk summaries on success", async () => {
-    mockFetch(200, CHUNKS);
+    mockFetch(200, CHUNKS_API_RESPONSE);
     const result = await getPatternChunks("abc-123");
     expect(result).toEqual(CHUNKS);
   });
@@ -344,7 +357,7 @@ describe("getPatternChunks", () => {
   });
 
   it("URL-encodes the pattern id in the chunks path", async () => {
-    mockFetch(200, CHUNKS);
+    mockFetch(200, CHUNKS_API_RESPONSE);
     await getPatternChunks("id/with/slashes");
     const [url] = vi.mocked(globalThis.fetch).mock.calls[0] as [
       string,

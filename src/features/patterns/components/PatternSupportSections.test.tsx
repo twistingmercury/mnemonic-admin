@@ -9,8 +9,8 @@ const MOCK_CHUNKS: ChunkSummary[] = [
 ];
 
 const MOCK_AGENTS: AgentAssociation[] = [
-  { agent_id: "agent-abc", agent_name: "Code Reviewer", relevance: 0.92 },
-  { agent_id: "agent-xyz", relevance: 0.75 },
+  { agent_name: "Code Reviewer", relevance: 0.92 },
+  { agent_name: "Agent XYZ", relevance: 0.75 },
 ];
 
 describe("PatternSupportSections", () => {
@@ -49,11 +49,11 @@ describe("PatternSupportSections", () => {
       expect(screen.getByText(/Code Reviewer/)).toBeInTheDocument();
     });
 
-    it("falls back to agent_id when agent_name is absent", () => {
+    it("renders Agent XYZ when present", () => {
       render(
         <PatternSupportSections chunks={[]} agentAssociations={MOCK_AGENTS} />,
       );
-      expect(screen.getByText(/agent-xyz/)).toBeInTheDocument();
+      expect(screen.getByText(/Agent XYZ/)).toBeInTheDocument();
     });
 
     it("renders relevance for each association", () => {

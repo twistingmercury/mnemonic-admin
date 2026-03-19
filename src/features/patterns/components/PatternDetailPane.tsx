@@ -30,15 +30,15 @@ export function PatternDetailPane({
   });
 
   if (patternId === null) {
-    return <div>Select a pattern to view details</div>;
+    return <div className="p-4 text-sm">Select a pattern to view details</div>;
   }
 
   if (isDetailLoading) {
-    return <div>Loading…</div>;
+    return <div className="p-4 text-sm">Loading…</div>;
   }
 
   if (isDetailError) {
-    return <div>Failed to load pattern</div>;
+    return <div className="p-4 text-sm">Failed to load pattern</div>;
   }
 
   if (!data) {
@@ -46,35 +46,27 @@ export function PatternDetailPane({
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        overflow: "auto",
-      }}
-    >
+    <div className="flex h-full flex-col overflow-auto p-4">
       <PatternMetadata pattern={data} />
       <PatternContent pattern={data} />
       <PatternSupportSections
         chunks={chunks}
-        agentAssociations={data.agent_associations}
+        agentAssociations={data.agent_associations ?? []}
       />
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      <div className="flex flex-col gap-2">
         <h3>Related Patterns</h3>
-        {data.related_patterns.length === 0 ? (
+        {(data.graph?.related_patterns ?? []).length === 0 ? (
           <p>No related patterns</p>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            {data.related_patterns.map((related) => (
+          <div className="flex flex-col gap-1">
+            {(data.graph?.related_patterns ?? []).map((related) => (
               <button
                 key={related.id}
                 type="button"
                 onClick={() => onSelectRelated?.(related.id)}
-                style={{ textAlign: "left" }}
+                className="text-left"
               >
                 <span>{related.name}</span>
-                {related.description && <span> — {related.description}</span>}
               </button>
             ))}
           </div>

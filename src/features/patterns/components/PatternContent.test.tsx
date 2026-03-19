@@ -12,12 +12,12 @@ const MOCK_PATTERN: PatternDetail = {
   domain: "backend",
   entity_type: "service",
   version: "1.0.0",
-  enriched: true,
+  enrichment_status: "complete",
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-02T00:00:00Z",
   content: "# Alpha Pattern\n\nThis is the pattern content.",
   agent_associations: [],
-  related_patterns: [],
+  graph: { related_patterns: [], concepts: [] },
 };
 
 describe("PatternContent", () => {

@@ -6,13 +6,7 @@ interface PatternMetadataProps {
 
 export function PatternMetadata({ pattern }: PatternMetadataProps) {
   return (
-    <dl
-      style={{
-        display: "grid",
-        gridTemplateColumns: "max-content 1fr",
-        gap: "4px 16px",
-      }}
-    >
+    <dl className="mb-4 grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm">
       <dt>Name</dt>
       <dd>{pattern.name}</dd>
 
@@ -40,26 +34,21 @@ export function PatternMetadata({ pattern }: PatternMetadataProps) {
         </>
       )}
 
-      <dt>Version</dt>
-      <dd>{pattern.version}</dd>
+      {pattern.version && (
+        <>
+          <dt>Version</dt>
+          <dd>{pattern.version}</dd>
+        </>
+      )}
 
-      <dt>Enriched</dt>
-      <dd>{pattern.enriched ? "Yes" : "No"}</dd>
+      <dt>Enrichment status</dt>
+      <dd>{pattern.enrichment_status}</dd>
 
       {pattern.tags.length > 0 && (
         <>
           <dt>Tags</dt>
           <dd>
-            <ul
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "4px",
-                listStyle: "none",
-                margin: 0,
-                padding: 0,
-              }}
-            >
+            <ul className="flex list-none flex-wrap gap-1 p-0">
               {pattern.tags.map((tag) => (
                 <li key={tag}>{tag}</li>
               ))}

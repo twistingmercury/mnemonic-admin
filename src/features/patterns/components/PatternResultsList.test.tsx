@@ -35,11 +35,7 @@ const MOCK_PATTERN: PatternListItem = {
   name: "Test Pattern Alpha",
   description: "A test pattern for unit tests",
   tags: ["testing", "unit"],
-  language: "typescript",
-  domain: "backend",
-  entity_type: "component",
-  version: "1.0.0",
-  enriched: true,
+  enrichment_status: "complete",
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-02T00:00:00Z",
 };
@@ -49,9 +45,10 @@ function makeResponse(
 ): PaginatedResponse<PatternListItem> {
   return {
     data: items,
-    total: items.length,
-    page: 1,
-    page_size: 20,
+    limit: 20,
+    cursor: "",
+    has_more: false,
+    next_cursor: "",
   };
 }
 
@@ -162,9 +159,12 @@ describe("PatternResultsList", () => {
 
     it("shows empty state when the search returns no results", async () => {
       mockSearchPatterns.mockResolvedValue({
+        metadata: {
+          query: "test query",
+          search_duration_ms: 0,
+          total_candidates: 0,
+        },
         results: [],
-        total: 0,
-        query: "test query",
       });
 
       renderWithQuery(<PatternResultsList query="test query" />);

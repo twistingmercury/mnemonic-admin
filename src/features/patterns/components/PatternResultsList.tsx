@@ -3,6 +3,7 @@ import { listPatterns, searchPatterns } from "../api/client";
 import { PatternResultRow } from "./PatternResultRow";
 import type { FilterState } from "./PatternFilters";
 import { EMPTY_FILTERS } from "./PatternFilters";
+import type { PatternListItem } from "../api/types";
 
 interface PatternResultsListProps {
   query?: string;
@@ -38,7 +39,7 @@ export function PatternResultsList({
         tags: filters.tags || undefined,
         language: filters.language || undefined,
         domain: filters.domain || undefined,
-        agent_id: filters.agent_id || undefined,
+        agent: filters.agent_id || undefined,
       }),
     enabled: isSearchMode,
   });
@@ -46,29 +47,35 @@ export function PatternResultsList({
   const { isLoading, isError } = isSearchMode ? searchResult : browseResult;
 
   if (isLoading) {
-    return <div>{isSearchMode ? "Searching…" : "Loading patterns…"}</div>;
+    return (
+      <div className="p-3 text-sm">
+        {isSearchMode ? "Searching…" : "Loading patterns…"}
+      </div>
+    );
   }
 
   if (isError) {
     return (
-      <div>{isSearchMode ? "Search failed" : "Failed to load patterns"}</div>
+      <div className="p-3 text-sm">
+        {isSearchMode ? "Search failed" : "Failed to load patterns"}
+      </div>
     );
   }
 
   const patterns = isSearchMode
-    ? (searchResult.data?.results ?? [])
+    ? ((searchResult.data?.results ?? []) as unknown as PatternListItem[])
     : (browseResult.data?.data ?? []);
 
   if (patterns.length === 0) {
     return (
-      <div>
+      <div className="p-3 text-sm">
         {isSearchMode ? "No results for your search" : "No patterns found"}
       </div>
     );
   }
 
   return (
-    <ul>
+    <ul className="flex-1 overflow-auto">
       {patterns.map((pattern) => (
         <PatternResultRow
           key={pattern.id}

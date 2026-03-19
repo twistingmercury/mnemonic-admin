@@ -12,12 +12,12 @@ const MOCK_PATTERN: PatternDetail = {
   domain: "backend",
   entity_type: "service",
   version: "1.0.0",
-  enriched: true,
+  enrichment_status: "complete",
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-02T00:00:00Z",
   content: "# Alpha Pattern\n\nThis is the pattern content.",
   agent_associations: [],
-  related_patterns: [],
+  graph: { related_patterns: [], concepts: [] },
 };
 
 describe("PatternMetadata", () => {
@@ -51,14 +51,18 @@ describe("PatternMetadata", () => {
     expect(screen.getByText("1.0.0")).toBeInTheDocument();
   });
 
-  it("renders enrichment status as Yes when enriched is true", () => {
+  it("renders enrichment_status value", () => {
     render(<PatternMetadata pattern={MOCK_PATTERN} />);
-    expect(screen.getByText("Yes")).toBeInTheDocument();
+    expect(screen.getByText("complete")).toBeInTheDocument();
   });
 
-  it("renders enrichment status as No when enriched is false", () => {
-    render(<PatternMetadata pattern={{ ...MOCK_PATTERN, enriched: false }} />);
-    expect(screen.getByText("No")).toBeInTheDocument();
+  it("renders a different enrichment_status value when provided", () => {
+    render(
+      <PatternMetadata
+        pattern={{ ...MOCK_PATTERN, enrichment_status: "pending" }}
+      />,
+    );
+    expect(screen.getByText("pending")).toBeInTheDocument();
   });
 
   it("renders all tags inside the tags list", () => {
@@ -82,12 +86,14 @@ describe("PatternMetadata", () => {
       language: undefined,
       domain: undefined,
       entity_type: undefined,
+      version: undefined,
       tags: [],
     };
     render(<PatternMetadata pattern={minimal} />);
     expect(screen.queryByText("Language")).not.toBeInTheDocument();
     expect(screen.queryByText("Domain")).not.toBeInTheDocument();
     expect(screen.queryByText("Entity type")).not.toBeInTheDocument();
+    expect(screen.queryByText("Version")).not.toBeInTheDocument();
     expect(screen.queryByText("Tags")).not.toBeInTheDocument();
   });
 });

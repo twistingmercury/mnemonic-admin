@@ -11,19 +11,12 @@ export function PatternResultRow({
   onSelect,
   selected,
 }: PatternResultRowProps) {
-  const secondaryParts = [
-    pattern.language,
-    pattern.domain,
-    pattern.entity_type,
-    `v${pattern.version}`,
-  ].filter(Boolean);
-
   return (
     <li
       role="button"
       aria-pressed={selected}
       onClick={() => onSelect(pattern.id)}
-      style={{ cursor: "pointer", fontWeight: selected ? "bold" : "normal" }}
+      className={`cursor-pointer border-b p-3 text-sm ${selected ? "font-semibold" : ""}`}
     >
       <div>
         <span>{pattern.name}</span>
@@ -36,7 +29,6 @@ export function PatternResultRow({
           ))}
         </div>
       )}
-      {secondaryParts.length > 0 && <div>{secondaryParts.join(" · ")}</div>}
     </li>
   );
 }
