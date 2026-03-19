@@ -85,7 +85,7 @@ The second release must correct all contract mismatches so the frontend correctl
 - Verify: `npm run build && npm run test`
 - Done: Client functions send correct parameters and handle real API response shapes, and all client tests pass.
 
-- [ ] **Cycle 3 - Adapt the browse list for cursor-based pagination and trimmed list item shape**: Update `PatternResultsList` and `PatternResultRow` to work with the real list response.
+- [x] **Cycle 3 - Adapt the browse list for cursor-based pagination and trimmed list item shape**: Update `PatternResultsList` and `PatternResultRow` to work with the real list response.
 - Agent: `react software engineer`
 - Files: `src/features/patterns/components/PatternResultsList.tsx`, `src/features/patterns/components/PatternResultRow.tsx`, `src/features/patterns/components/PatternResultsList.test.tsx`
 - Steps:

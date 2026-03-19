@@ -49,3 +49,29 @@ Date: 2026-03-18
 - `npx eslint src/`: 0 errors (pre-existing warnings in patternFileParser.ts are not errors)
 - `npx prettier --check .`: clean
 - `npm audit --audit-level=high`: 0 vulnerabilities
+
+## Cycle 3 — Adapt the browse list for cursor-based pagination and trimmed list item shape
+Date: 2026-03-18
+
+### Work completed
+- Replaced `useQuery` with `useInfiniteQuery` in `PatternResultsList` for browse mode
+- `getNextPageParam` reads `has_more` and `next_cursor` from each page to drive cursor pagination
+- Results accumulated via `pages.flatMap(p => p.data)`
+- Added "Load More" button rendered when the last page's `has_more` is true; button disabled while fetching next page
+- `PatternResultRow` required no changes — it already renders only `name`, `description`, and `tags` (the trimmed `PatternListItem` shape)
+- Added three new tests to `PatternResultsList.test.tsx`:
+  - "Load More" button visible when `has_more: true`
+  - "Load More" button absent when `has_more: false`
+  - Clicking "Load More" fetches next page and appends results
+
+### Verification
+- `npm run build`: clean
+- `npm run test`: 144/144 passed (3 new tests)
+- `npx tsc --noEmit`: 0 errors
+- `npx eslint src/`: 0 errors (pre-existing warnings in patternFileParser.ts)
+- `npx prettier --check .`: clean
+- `npm audit --audit-level=high`: 0 vulnerabilities
+
+### Notes
+- `filters.agent_id` reference in `PatternResultsList` retained — Cycle 6 renames it to `agent`
+- Search mode still uses `useQuery` (search results are not paginated)
