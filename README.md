@@ -94,15 +94,34 @@ The development server includes hot module reloading. Changes to component files
 
 ### Environment Configuration
 
-The API client reads the API base URL from the `VITE_API_BASE_URL` environment variable at build and development time. The default fallback is `http://localhost:8080/v1/api`.
+The Vite development server automatically proxies all requests to `/v1/api` to `http://localhost:8080`. This proxy is configured in `vite.config.ts` and prevents CORS errors during development by allowing the browser to make requests that appear to come from the same origin.
 
-To override the API endpoint, create a `.env.local` file in the project root (not committed to version control) and set:
+The API client reads the API base URL from the `VITE_API_BASE_URL` environment variable. To use the development proxy, create a `.env.local` file in the project root (not committed to version control) and set:
 
 ```
-VITE_API_BASE_URL=http://your-api-host/v1/api
+VITE_API_BASE_URL=/v1/api
 ```
 
-Then restart the development server for the new value to take effect.
+This routes all API requests through the Vite proxy to `http://localhost:8080`.
+
+To bypass the proxy and hit the API directly from your local machine, set the full URL instead:
+
+```
+VITE_API_BASE_URL=http://localhost:8080/v1/api
+```
+
+However, direct requests may trigger CORS errors depending on the API's CORS configuration. The proxy-based approach (using just the path) is recommended for local development.
+
+### Troubleshooting
+
+**API is unreachable:**
+Verify that the Mnemonic API is running at `http://localhost:8080`. Start it before running the development server.
+
+**CORS errors in the browser console:**
+Check that `VITE_API_BASE_URL` is set to `/v1/api` (not the full URL) in `.env.local`. This ensures requests route through the Vite dev proxy, which avoids CORS issues.
+
+**Dev server is not running:**
+Start the development server with `npm run dev` before opening the browser. The server must be running on `http://localhost:5173` (or the port shown in the terminal) for the proxy to work.
 
 ### Building & Running
 
