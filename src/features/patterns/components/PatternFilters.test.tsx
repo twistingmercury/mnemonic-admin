@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { vi, describe, it, expect } from "vitest";
@@ -59,8 +59,12 @@ describe("PatternFilters", () => {
 
     await user.type(screen.getByLabelText(/tags/i), "testing");
 
-    expect(handleChange).toHaveBeenLastCalledWith(
-      expect.objectContaining({ tags: "testing" }),
+    await waitFor(
+      () =>
+        expect(handleChange).toHaveBeenLastCalledWith(
+          expect.objectContaining({ tags: "testing" }),
+        ),
+      { timeout: 600 },
     );
   });
 
@@ -72,8 +76,12 @@ describe("PatternFilters", () => {
 
     await user.type(screen.getByLabelText(/language/i), "go");
 
-    expect(handleChange).toHaveBeenLastCalledWith(
-      expect.objectContaining({ language: "go" }),
+    await waitFor(
+      () =>
+        expect(handleChange).toHaveBeenLastCalledWith(
+          expect.objectContaining({ language: "go" }),
+        ),
+      { timeout: 600 },
     );
   });
 
@@ -85,8 +93,12 @@ describe("PatternFilters", () => {
 
     await user.type(screen.getByLabelText(/domain/i), "backend");
 
-    expect(handleChange).toHaveBeenLastCalledWith(
-      expect.objectContaining({ domain: "backend" }),
+    await waitFor(
+      () =>
+        expect(handleChange).toHaveBeenLastCalledWith(
+          expect.objectContaining({ domain: "backend" }),
+        ),
+      { timeout: 600 },
     );
   });
 
@@ -98,8 +110,12 @@ describe("PatternFilters", () => {
 
     await user.type(screen.getByLabelText(/agent/i), "agent-x");
 
-    expect(handleChange).toHaveBeenLastCalledWith(
-      expect.objectContaining({ agent: "agent-x" }),
+    await waitFor(
+      () =>
+        expect(handleChange).toHaveBeenLastCalledWith(
+          expect.objectContaining({ agent: "agent-x" }),
+        ),
+      { timeout: 600 },
     );
   });
 

@@ -17,6 +17,11 @@ export function PatternSearchForm({
     onSearch(trimmed);
   }
 
+  function handleClear() {
+    setInputValue("");
+    onSearch("");
+  }
+
   return (
     <div className="p-3">
       <form onSubmit={handleSubmit} className="flex w-full">
@@ -28,6 +33,11 @@ export function PatternSearchForm({
           placeholder="Search patterns…"
           className="min-w-0 flex-1"
         />
+        {inputValue && (
+          <button type="button" onClick={handleClear} aria-label="Clear">
+            Clear
+          </button>
+        )}
         <button type="submit">Search</button>
       </form>
       {activeQuery && (

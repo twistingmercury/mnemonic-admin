@@ -48,7 +48,6 @@ export function PatternDetailPane({
   return (
     <div className="flex h-full flex-col overflow-auto p-4">
       <PatternMetadata pattern={data} />
-      <PatternContent pattern={data} />
       <PatternSupportSections
         chunks={chunks}
         agentAssociations={data.agent_associations ?? []}
@@ -75,6 +74,7 @@ export function PatternDetailPane({
           </div>
         )}
       </div>
+      <PatternContent pattern={data} />
     </div>
   );
 }

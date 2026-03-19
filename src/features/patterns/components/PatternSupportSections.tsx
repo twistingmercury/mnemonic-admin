@@ -10,7 +10,7 @@ export function PatternSupportSections({
   agentAssociations,
 }: PatternSupportSectionsProps) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="mt-4 flex flex-col gap-4 border-t pt-4">
       <section aria-label="Chunk summaries">
         <h3>Chunk Summaries</h3>
         {chunks.length === 0 ? (

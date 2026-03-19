@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { listPatterns, searchPatterns } from "../api/client";
 import { PatternResultRow } from "./PatternResultRow";
@@ -19,6 +20,7 @@ export function PatternResultsList({
   selectedId,
 }: PatternResultsListProps) {
   const isSearchMode = typeof query === "string" && query.length > 0;
+  const [selectedChunkKey, setSelectedChunkKey] = useState<string | null>(null);
 
   const browseResult = useInfiniteQuery({
     queryKey: ["patterns", filters],
@@ -76,15 +78,21 @@ export function PatternResultsList({
     return (
       <div className="flex flex-1 flex-col overflow-auto">
         <ul>
-          {searchResults.map((result) => (
-            <PatternResultRow
-              key={`${result.pattern_id}-${result.chunk_index}`}
-              mode="search"
-              result={result}
-              onSelect={onSelect ?? (() => {})}
-              selected={selectedId === result.pattern_id}
-            />
-          ))}
+          {searchResults.map((result) => {
+            const chunkKey = `${result.pattern_id}-${result.chunk_index}`;
+            return (
+              <PatternResultRow
+                key={chunkKey}
+                mode="search"
+                result={result}
+                onSelect={(id) => {
+                  setSelectedChunkKey(chunkKey);
+                  (onSelect ?? (() => {}))(id);
+                }}
+                selected={selectedChunkKey === chunkKey}
+              />
+            );
+          })}
         </ul>
       </div>
     );

@@ -86,8 +86,8 @@ export function ImportPatternOverlay({
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center">
-      <div className="relative w-full max-w-[560px] border p-6">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+      <div className="relative w-full max-w-[560px] border bg-white p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2>Import Pattern</h2>
           <button type="button" onClick={onClose} aria-label="Close">

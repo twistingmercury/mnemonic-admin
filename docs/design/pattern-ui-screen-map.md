@@ -84,20 +84,20 @@ phase 1, not final visual design.
 |   Comprehensive AsyncAPI 3.0.0 specification  | Description                                      |
 |   asyncapi kafka mqtt api-design agnostic     | Tags | Domain | Language | Entity Type | Status  |
 |   Match: Core AsyncAPI Concepts | 0.91        |                                                  |
-|-----------------------------------------------| Content                                          |
-|   rest-api-specification-pattern              | -----------------------------------------------  |
-|   OpenAPI-first REST API specification        | Full rendered pattern content                    |
-|   openapi rest api-design agnostic            |                                                  |
 |-----------------------------------------------| Chunk Summaries                                  |
-|   grpc-service-definition-pattern             | - Core AsyncAPI Concepts                         |
-|   Service definition and contract design      | - Basic AsyncAPI Specification                   |
-|   grpc api-design agnostic                    |                                                  |
-|-----------------------------------------------| Related Patterns                                 |
-|                                               | - REST API Specification Pattern                 |
+|   rest-api-specification-pattern              | - Core AsyncAPI Concepts                         |
+|   OpenAPI-first REST API specification        | - Basic AsyncAPI Specification                   |
+|   openapi rest api-design agnostic            |                                                  |
+|-----------------------------------------------| Agent Associations                               |
+|   grpc-service-definition-pattern             | - api-designer (0.8)                             |
+|   Service definition and contract design      |                                                  |
+|   grpc api-design agnostic                    | Related Patterns                                 |
+|-----------------------------------------------| - REST API Specification Pattern                 |
 |                                               | - gRPC Service Definition Pattern                |
 |                                               |                                                  |
-|                                               | Agent Associations                               |
-|                                               | - api-designer (0.8)                             |
+|                                               | Content                                          |
+|                                               | -----------------------------------------------  |
+|                                               | Full rendered pattern content                    |
 +-----------------------------------------------+--------------------------------------------------+
 ```
 

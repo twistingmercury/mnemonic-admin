@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import type { FilterState } from "./filterTypes";
 
 export type { FilterState } from "./filterTypes";
@@ -12,20 +13,33 @@ export function PatternFilters({
   filters,
   onFiltersChange,
 }: PatternFiltersProps) {
-  const activeCount = Object.values(filters).filter((v) => v.length > 0).length;
+  const [localFilters, setLocalFilters] = useState<FilterState>(filters);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onFiltersChange(localFilters);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [localFilters, onFiltersChange]);
+
+  const activeCount = Object.values(localFilters).filter(
+    (v) => v.length > 0,
+  ).length;
 
   function handleChange(field: keyof FilterState, value: string) {
-    onFiltersChange({ ...filters, [field]: value });
+    setLocalFilters((prev) => ({ ...prev, [field]: value }));
   }
 
   return (
     <form className="flex flex-col gap-1 border-b p-3">
       {activeCount > 0 && (
         <div aria-label="active filters">
-          {filters.tags && <span>tags: {filters.tags}</span>}
-          {filters.language && <span> language: {filters.language}</span>}
-          {filters.domain && <span> domain: {filters.domain}</span>}
-          {filters.agent && <span> agent: {filters.agent}</span>}
+          {localFilters.tags && <span>tags: {localFilters.tags}</span>}
+          {localFilters.language && (
+            <span> language: {localFilters.language}</span>
+          )}
+          {localFilters.domain && <span> domain: {localFilters.domain}</span>}
+          {localFilters.agent && <span> agent: {localFilters.agent}</span>}
         </div>
       )}
       <div className="flex flex-wrap gap-1">
@@ -33,7 +47,7 @@ export function PatternFilters({
           Tags
           <input
             type="text"
-            value={filters.tags}
+            value={localFilters.tags}
             onChange={(e) => handleChange("tags", e.target.value)}
             className="w-20"
           />
@@ -42,7 +56,7 @@ export function PatternFilters({
           Language
           <input
             type="text"
-            value={filters.language}
+            value={localFilters.language}
             onChange={(e) => handleChange("language", e.target.value)}
             className="w-20"
           />
@@ -51,7 +65,7 @@ export function PatternFilters({
           Domain
           <input
             type="text"
-            value={filters.domain}
+            value={localFilters.domain}
             onChange={(e) => handleChange("domain", e.target.value)}
             className="w-20"
           />
@@ -60,7 +74,7 @@ export function PatternFilters({
           Agent
           <input
             type="text"
-            value={filters.agent}
+            value={localFilters.agent}
             onChange={(e) => handleChange("agent", e.target.value)}
             className="w-20"
           />
