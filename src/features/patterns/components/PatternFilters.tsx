@@ -19,46 +19,50 @@ export function PatternFilters({
   }
 
   return (
-    <form style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+    <form className="flex flex-col gap-1 border-b p-3">
       {activeCount > 0 && (
         <div aria-label="active filters">
           {filters.tags && <span>tags: {filters.tags}</span>}
           {filters.language && <span> language: {filters.language}</span>}
           {filters.domain && <span> domain: {filters.domain}</span>}
-          {filters.agent_id && <span> agent: {filters.agent_id}</span>}
+          {filters.agent && <span> agent: {filters.agent}</span>}
         </div>
       )}
-      <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
-        <label style={{ display: "flex", flexDirection: "column" }}>
+      <div className="flex flex-wrap gap-1">
+        <label className="flex flex-col text-sm">
           Tags
           <input
             type="text"
             value={filters.tags}
             onChange={(e) => handleChange("tags", e.target.value)}
+            className="w-20"
           />
         </label>
-        <label style={{ display: "flex", flexDirection: "column" }}>
+        <label className="flex flex-col text-sm">
           Language
           <input
             type="text"
             value={filters.language}
             onChange={(e) => handleChange("language", e.target.value)}
+            className="w-20"
           />
         </label>
-        <label style={{ display: "flex", flexDirection: "column" }}>
+        <label className="flex flex-col text-sm">
           Domain
           <input
             type="text"
             value={filters.domain}
             onChange={(e) => handleChange("domain", e.target.value)}
+            className="w-20"
           />
         </label>
-        <label style={{ display: "flex", flexDirection: "column" }}>
+        <label className="flex flex-col text-sm">
           Agent
           <input
             type="text"
-            value={filters.agent_id}
-            onChange={(e) => handleChange("agent_id", e.target.value)}
+            value={filters.agent}
+            onChange={(e) => handleChange("agent", e.target.value)}
+            className="w-20"
           />
         </label>
       </div>

@@ -90,7 +90,7 @@ describe("PatternFilters", () => {
     );
   });
 
-  it("calls onFiltersChange with updated agent_id when the agent input changes", async () => {
+  it("calls onFiltersChange with updated agent when the agent input changes", async () => {
     const handleChange = vi.fn();
     const user = userEvent.setup();
 
@@ -99,7 +99,7 @@ describe("PatternFilters", () => {
     await user.type(screen.getByLabelText(/agent/i), "agent-x");
 
     expect(handleChange).toHaveBeenLastCalledWith(
-      expect.objectContaining({ agent_id: "agent-x" }),
+      expect.objectContaining({ agent: "agent-x" }),
     );
   });
 
@@ -108,7 +108,7 @@ describe("PatternFilters", () => {
       tags: "react",
       language: "typescript",
       domain: "frontend",
-      agent_id: "",
+      agent: "",
     };
 
     renderWithQuery(
