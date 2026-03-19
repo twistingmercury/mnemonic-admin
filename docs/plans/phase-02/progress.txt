@@ -104,3 +104,20 @@ Date: 2026-03-18
 - `npx eslint src/`: 0 errors (pre-existing warnings in patternFileParser.ts)
 - `npx prettier --check .`: clean
 - `npm audit --audit-level=high`: 0 vulnerabilities
+
+---
+## Cycle 6 — Update the agent filter parameter and PatternFilters component
+Date: 2026-03-18
+
+### Work completed
+- Renamed `agent_id` to `agent` in `FilterState` interface and `EMPTY_FILTERS` constant (`filterTypes.ts`)
+- Updated all `agent_id` references in `PatternFilters.tsx` (active filter display, input value, onChange handler)
+- Updated `PatternResultsList.tsx` to pass `filters.agent` (was `filters.agent_id`) to `searchPatterns`
+- Updated `PatternFilters.test.tsx`: test description, assertion key, and fixture field all updated to use `agent`
+
+### Verification
+- `npx tsc --noEmit`: 0 errors
+- `npm run test`: 149/149 passed
+- `npm run build`: clean
+- `npx eslint src/`: 0 errors (pre-existing warnings only)
+- `npx prettier --check .`: clean

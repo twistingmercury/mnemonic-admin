@@ -119,7 +119,7 @@ The second release must correct all contract mismatches so the frontend correctl
 - Verify: `npm run build && npm run test`
 - Done: Pattern detail and metadata render correct field names and read from the correct nested structures, and component tests pass.
 
-- [ ] **Cycle 6 - Update the agent filter parameter and PatternFilters component**: Correct agent filter to send `agent` (name) instead of `agent_id`.
+- [x] **Cycle 6 - Update the agent filter parameter and PatternFilters component**: Correct agent filter to send `agent` (name) instead of `agent_id`.
 - Agent: `react software engineer`
 - Files: `src/features/patterns/components/PatternFilters.tsx`, `src/features/patterns/components/filterTypes.ts`, `src/features/patterns/components/PatternFilters.test.tsx`, `src/features/workspace/PatternWorkspace.tsx`
 - Steps:
