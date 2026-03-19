@@ -1,0 +1,30 @@
+## Cycle 1 — Realign API types with the Swagger specification
+Date: 2026-03-18
+
+### Work completed
+- Rewrote `src/features/patterns/api/types.ts` to match the real Mnemonic API contract:
+  - `PatternListItem`: removed `version`, `enriched`, `language`, `domain`, `entity_type`; added `enrichment_status: string`
+  - `PatternDetail`: moved optional `version?`, `language?`, `domain?`, `entity_type?` here; added `enriched_at?`, `enrichment_error?`, `graph: { related_patterns, concepts }`; removed top-level `related_patterns: RelatedPattern[]`
+  - `RelatedPattern`: replaced `description`/`similarity_score?` with `relationship: string`/`strength: number`
+  - `AgentAssociation`: removed `agent_id`; made `agent_name: string` required
+  - `ChunkSummary`: removed `token_count?` (internal normalized shape kept as `{ id, index, summary }`)
+  - Added `SearchResultItem` type for chunk-level search results
+  - `PaginatedResponse<T>`: replaced offset pagination with cursor-based (`limit`, `cursor`, `has_more`, `next_cursor`)
+  - `SearchResponse`: replaced with `{ metadata: { query, search_duration_ms, total_candidates }, results: SearchResultItem[] }`
+  - `BrowseParams`: replaced `page`/`page_size` with `limit?`, `cursor?`, `search?`, `entity_type?`
+  - `SearchParams`: replaced `page`/`page_size`/`agent_id` with `limit?`, `threshold?`, `agent?`
+- Updated test fixtures in `client.test.ts` to match all new type shapes; updated URL-param tests
+- Fixed cascading TypeScript errors in components and tests: `PatternResultRow`, `PatternResultsList`, `PatternDetailPane`, `PatternMetadata`, `PatternSupportSections`, plus `PatternContent.test.tsx` and `ImportPatternOverlay.test.tsx`
+
+### Verification
+- `npx tsc --noEmit`: clean (0 errors)
+- `npm run test`: 140/140 passed
+- `npm run build`: clean
+- `npx eslint src/`: 0 errors
+- `npx prettier --check .`: all formatted
+- `npm audit --audit-level=high`: 0 vulnerabilities
+
+### Notes
+- `FilterState` retains `agent_id` — Cycle 6 renames it to `agent`
+- Search results cast to `PatternListItem[]` as a temporary shim — Cycle 4 separates browse vs search rendering
+- `client.ts` not modified; `buildQuery` forwards params directly, so type changes are sufficient
