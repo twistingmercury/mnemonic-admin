@@ -65,6 +65,16 @@ const PATTERN_DETAIL: PatternDetail = {
   },
 };
 
+const LIST_API_RESPONSE = {
+  data: [PATTERN_ITEM],
+  pagination: {
+    cursor: "",
+    has_more: false,
+    limit: 20,
+    next_cursor: "",
+  },
+};
+
 const PAGINATED: PaginatedResponse<PatternListItem> = {
   data: [PATTERN_ITEM],
   limit: 20,
@@ -189,13 +199,13 @@ describe("listPatterns", () => {
   afterEach(() => vi.restoreAllMocks());
 
   it("returns paginated pattern list on success", async () => {
-    mockFetch(200, PAGINATED);
+    mockFetch(200, LIST_API_RESPONSE);
     const result = await listPatterns();
     expect(result).toEqual(PAGINATED);
   });
 
   it("appends query params to the request URL", async () => {
-    mockFetch(200, PAGINATED);
+    mockFetch(200, LIST_API_RESPONSE);
     await listPatterns({ limit: 10, cursor: "abc", language: "go" });
     const [url] = vi.mocked(globalThis.fetch).mock.calls[0] as [
       string,
@@ -207,7 +217,7 @@ describe("listPatterns", () => {
   });
 
   it("appends tags and domain filter params to the URL", async () => {
-    mockFetch(200, PAGINATED);
+    mockFetch(200, LIST_API_RESPONSE);
     await listPatterns({ tags: "security", domain: "backend" });
     const [url] = vi.mocked(globalThis.fetch).mock.calls[0] as [
       string,
@@ -218,13 +228,32 @@ describe("listPatterns", () => {
   });
 
   it("does not append a query string when called with no params", async () => {
-    mockFetch(200, PAGINATED);
+    mockFetch(200, LIST_API_RESPONSE);
     await listPatterns();
     const [url] = vi.mocked(globalThis.fetch).mock.calls[0] as [
       string,
       ...unknown[],
     ];
     expect(url).not.toContain("?");
+  });
+
+  it("unwraps nested pagination into flat PaginatedResponse", async () => {
+    mockFetch(200, {
+      data: [PATTERN_ITEM],
+      pagination: {
+        has_more: true,
+        limit: 5,
+        cursor: "start",
+        next_cursor: "end",
+      },
+    });
+    const result = await listPatterns();
+    expect(result).toMatchObject({
+      has_more: true,
+      limit: 5,
+      cursor: "start",
+      next_cursor: "end",
+    });
   });
 
   it("throws ApiError on non-2xx response with problem detail", async () => {

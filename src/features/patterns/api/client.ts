@@ -93,16 +93,37 @@ function buildQuery(
   return str ? `?${str}` : "";
 }
 
+// ─── Internal response shapes ─────────────────────────────────────────────────
+
+interface ListApiResponse<T> {
+  data: T[];
+  pagination: {
+    cursor: string;
+    has_more: boolean;
+    limit: number;
+    next_cursor: string;
+  };
+}
+
 // ─── Public client functions ──────────────────────────────────────────────────
 
 /** Browse/list patterns with optional filters and pagination. */
-export function listPatterns(
+export async function listPatterns(
   params: BrowseParams = {},
 ): Promise<PaginatedResponse<PatternListItem>> {
   const query = buildQuery(
     params as Record<string, string | number | undefined>,
   );
-  return apiFetch(`/patterns${query}`);
+  const raw = await apiFetch<ListApiResponse<PatternListItem>>(
+    `/patterns${query}`,
+  );
+  return {
+    data: raw.data,
+    limit: raw.pagination.limit,
+    cursor: raw.pagination.cursor,
+    has_more: raw.pagination.has_more,
+    next_cursor: raw.pagination.next_cursor,
+  };
 }
 
 /** Semantic search over patterns. */
@@ -119,8 +140,15 @@ export function getPattern(id: string): Promise<PatternDetail> {
 }
 
 /** Fetch chunk summaries for a pattern. */
-export function getPatternChunks(id: string): Promise<ChunkSummary[]> {
-  return apiFetch(`/patterns/${encodeURIComponent(id)}/chunks`);
+export async function getPatternChunks(id: string): Promise<ChunkSummary[]> {
+  const response = await apiFetch<{
+    chunks: { chunk_index: number; section_title: string }[];
+  }>(`/patterns/${encodeURIComponent(id)}/chunks`);
+  return (response.chunks ?? []).map((c) => ({
+    id: String(c.chunk_index),
+    index: c.chunk_index,
+    summary: c.section_title,
+  }));
 }
 
 /** Create or import a new pattern. */
