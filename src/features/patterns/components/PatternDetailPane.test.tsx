@@ -120,6 +120,33 @@ describe("PatternDetailPane", () => {
     expect(onSelectRelated).toHaveBeenCalledWith("related-xyz");
   });
 
+  it("renders relationship and strength for related patterns", async () => {
+    const detailWithRelated: PatternDetail = {
+      ...MOCK_DETAIL,
+      graph: {
+        related_patterns: [
+          {
+            id: "related-xyz",
+            name: "Beta Pattern",
+            relationship: "uses",
+            strength: 0.8,
+          },
+        ],
+        concepts: [],
+      },
+    };
+    mockGetPattern.mockResolvedValue(detailWithRelated);
+
+    renderWithQuery(<PatternDetailPane patternId="pattern-abc" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Beta Pattern")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText(/uses/)).toBeInTheDocument();
+    expect(screen.getByText(/0\.8/)).toBeInTheDocument();
+  });
+
   it("clicking a related pattern does not call a separate search handler", async () => {
     const detailWithRelated: PatternDetail = {
       ...MOCK_DETAIL,

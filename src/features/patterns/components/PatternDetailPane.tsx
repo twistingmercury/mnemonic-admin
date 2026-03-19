@@ -67,6 +67,9 @@ export function PatternDetailPane({
                 className="text-left"
               >
                 <span>{related.name}</span>
+                <span className="ml-2 text-xs opacity-70">
+                  {related.relationship} · {related.strength}
+                </span>
               </button>
             ))}
           </div>
