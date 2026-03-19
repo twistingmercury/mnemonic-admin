@@ -121,3 +121,17 @@ Date: 2026-03-18
 - `npm run build`: clean
 - `npx eslint src/`: 0 errors (pre-existing warnings only)
 - `npx prettier --check .`: clean
+
+---
+## Cycle 7 — Add a Vite dev proxy entry to the README and document the .env.local pattern
+Date: 2026-03-18
+
+### Work completed
+- Updated the "Environment Configuration" section in `README.md`:
+  - Added paragraph explaining that `vite.config.ts` proxies `/v1/api` → `http://localhost:8080` to prevent CORS errors.
+  - Changed the `.env.local` example to use `VITE_API_BASE_URL=/v1/api` (path only) as the recommended local dev value.
+  - Added note that the full URL form bypasses the proxy and may cause CORS errors.
+- Added a new "Troubleshooting" subsection under "Development Considerations" with three common API connectivity issues and their solutions.
+
+### Verification
+- `test -f README.md`: passed

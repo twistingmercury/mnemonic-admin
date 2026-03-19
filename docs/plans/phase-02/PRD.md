@@ -130,7 +130,7 @@ The second release must correct all contract mismatches so the frontend correctl
 - Verify: `npm run build && npm run test`
 - Done: The agent filter sends the correct parameter name (`agent`) to the API, and component tests pass.
 
-- [ ] **Cycle 7 - Add a Vite dev proxy entry to the README and document the .env.local pattern**: Document dev-time configuration.
+- [x] **Cycle 7 - Add a Vite dev proxy entry to the README and document the .env.local pattern**: Document dev-time configuration.
 - Agent: `technical writer`
 - Files: `README.md`
 - Steps:
