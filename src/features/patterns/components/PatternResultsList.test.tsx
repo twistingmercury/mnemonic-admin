@@ -148,6 +148,74 @@ describe("PatternResultsList", () => {
     expect(row).toHaveAttribute("aria-pressed", "false");
   });
 
+  describe("cursor-based pagination", () => {
+    it("shows Load More button when has_more is true", async () => {
+      mockListPatterns.mockResolvedValue({
+        data: [MOCK_PATTERN],
+        limit: 20,
+        cursor: "",
+        has_more: true,
+        next_cursor: "cursor-abc",
+      });
+
+      renderWithQuery(<PatternResultsList />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Test Pattern Alpha")).toBeInTheDocument();
+      });
+
+      expect(
+        screen.getByRole("button", { name: /Load More/ }),
+      ).toBeInTheDocument();
+    });
+
+    it("does not show Load More button when has_more is false", async () => {
+      mockListPatterns.mockResolvedValue(makeResponse([MOCK_PATTERN]));
+
+      renderWithQuery(<PatternResultsList />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Test Pattern Alpha")).toBeInTheDocument();
+      });
+
+      expect(
+        screen.queryByRole("button", { name: /Load More/ }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("fetches the next page and appends results when Load More is clicked", async () => {
+      const second: PatternListItem = {
+        ...MOCK_PATTERN,
+        id: "pattern-2",
+        name: "Second Pattern Beta",
+      };
+      mockListPatterns
+        .mockResolvedValueOnce({
+          data: [MOCK_PATTERN],
+          limit: 20,
+          cursor: "",
+          has_more: true,
+          next_cursor: "cursor-abc",
+        })
+        .mockResolvedValueOnce(makeResponse([second]));
+
+      const user = userEvent.setup();
+      renderWithQuery(<PatternResultsList />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Test Pattern Alpha")).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole("button", { name: /Load More/ }));
+
+      await waitFor(() => {
+        expect(screen.getByText("Second Pattern Beta")).toBeInTheDocument();
+      });
+
+      expect(screen.getByText("Test Pattern Alpha")).toBeInTheDocument();
+    });
+  });
+
   describe("search mode", () => {
     it("shows searching state while the search query is in flight", () => {
       mockSearchPatterns.mockReturnValue(new Promise(() => {}));
