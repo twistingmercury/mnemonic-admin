@@ -71,7 +71,7 @@ The second release must correct all contract mismatches so the frontend correctl
 - Verify: `npm run build && npm run test`
 - Done: Types match the real API contract, fixtures are updated, and build and test pass.
 
-- [ ] **Cycle 2 - Update API client functions to use correct parameters and response shapes**: Fix `listPatterns` and `searchPatterns` to send and consume real API shapes.
+- [x] **Cycle 2 - Update API client functions to use correct parameters and response shapes**: Fix `listPatterns` and `searchPatterns` to send and consume real API shapes.
 - Agent: `react software engineer`
 - Files: `src/features/patterns/api/client.ts`, `src/features/patterns/api/client.test.ts`
 - Steps:

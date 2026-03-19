@@ -28,3 +28,24 @@ Date: 2026-03-18
 - `FilterState` retains `agent_id` — Cycle 6 renames it to `agent`
 - Search results cast to `PatternListItem[]` as a temporary shim — Cycle 4 separates browse vs search rendering
 - `client.ts` not modified; `buildQuery` forwards params directly, so type changes are sufficient
+
+## Cycle 2 — Update API client functions to use correct parameters and response shapes
+Date: 2026-03-18
+
+### Work completed
+- Added local `ListApiResponse<T>` interface in `client.ts` with nested `pagination` object matching real API wire format
+- Converted `listPatterns` to `async` function that unwraps nested `pagination` object into flat `PaginatedResponse<PatternListItem>`
+- `searchPatterns` required no changes — `SearchParams` already uses `agent`, `limit`, `threshold` after Cycle 1, and `SearchResponse` shape already matches API
+- Updated `client.test.ts`:
+  - Added `LIST_API_RESPONSE` fixture (nested pagination — real API wire format)
+  - Updated all `listPatterns` success-path mocks to serve `LIST_API_RESPONSE`
+  - Added new test "unwraps nested pagination into flat PaginatedResponse"
+  - All existing tests remain unchanged and passing
+
+### Verification
+- `npm run build`: clean
+- `npm run test`: 141/141 passed (one new test added)
+- `npx tsc --noEmit`: 0 errors
+- `npx eslint src/`: 0 errors (pre-existing warnings in patternFileParser.ts are not errors)
+- `npx prettier --check .`: clean
+- `npm audit --audit-level=high`: 0 vulnerabilities
