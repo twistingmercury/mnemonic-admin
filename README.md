@@ -1,7 +1,7 @@
 # mnemonic-admin
 
 > **Maturity Level**: Emerging — prototype, not production-ready; expect breaking changes
-> **Version**: v0.0.1
+> **Version**: 0.1.0
 
 ---
 
