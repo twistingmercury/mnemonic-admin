@@ -40,7 +40,7 @@ function ControlledFilters({
 }
 
 describe("PatternFilters", () => {
-  it("renders all four filter inputs", () => {
+  it("renders all three filter inputs", () => {
     renderWithQuery(
       <PatternFilters filters={EMPTY_FILTERS} onFiltersChange={vi.fn()} />,
     );
@@ -48,7 +48,6 @@ describe("PatternFilters", () => {
     expect(screen.getByLabelText(/tags/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/language/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/domain/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/agent/i)).toBeInTheDocument();
   });
 
   it("calls onFiltersChange with updated tags when the tags input changes", async () => {
@@ -102,29 +101,11 @@ describe("PatternFilters", () => {
     );
   });
 
-  it("calls onFiltersChange with updated agent when the agent input changes", async () => {
-    const handleChange = vi.fn();
-    const user = userEvent.setup();
-
-    renderWithQuery(<ControlledFilters onChange={handleChange} />);
-
-    await user.type(screen.getByLabelText(/agent/i), "agent-x");
-
-    await waitFor(
-      () =>
-        expect(handleChange).toHaveBeenLastCalledWith(
-          expect.objectContaining({ agent: "agent-x" }),
-        ),
-      { timeout: 600 },
-    );
-  });
-
   it("shows active filter values in the rendered output when filters are non-empty", () => {
     const activeFilters: FilterState = {
       tags: "react",
       language: "typescript",
       domain: "frontend",
-      agent: "",
     };
 
     renderWithQuery(

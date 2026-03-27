@@ -64,39 +64,6 @@ describe("buildPatternPayload", () => {
     expect("entity_type" in payload).toBe(false);
   });
 
-  it("converts agents array to agent_associations with default relevance", () => {
-    const payload = buildPatternPayload(
-      makeFile({
-        name: "n",
-        description: "d",
-        agents: ["agent-alpha", "agent-beta"],
-      }),
-    );
-
-    expect(payload.agent_associations).toEqual([
-      { agent_name: "agent-alpha", relevance: 0.8 },
-      { agent_name: "agent-beta", relevance: 0.8 },
-    ]);
-  });
-
-  it("converts single agent string to agent_associations array", () => {
-    const payload = buildPatternPayload(
-      makeFile({ name: "n", description: "d", agents: "solo-agent" }),
-    );
-
-    expect(payload.agent_associations).toEqual([
-      { agent_name: "solo-agent", relevance: 0.8 },
-    ]);
-  });
-
-  it("omits agent_associations when agents is absent", () => {
-    const payload = buildPatternPayload(
-      makeFile({ name: "n", description: "d" }),
-    );
-
-    expect("agent_associations" in payload).toBe(false);
-  });
-
   it("passes body content through unchanged", () => {
     const specialBody =
       "## Overview\n\nLine 1\nLine 2\n\t tabbed\n[//]: pattern\n<special> & chars";
@@ -113,14 +80,6 @@ describe("buildPatternPayload", () => {
     );
 
     expect(payload.tags).toEqual([]);
-  });
-
-  it("sets agent_associations to an empty array when agents is an empty array", () => {
-    const payload = buildPatternPayload(
-      makeFile({ name: "n", description: "d", agents: [] }),
-    );
-
-    expect(payload.agent_associations).toEqual([]);
   });
 
   it("omits tags when tags is absent", () => {

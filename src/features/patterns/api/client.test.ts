@@ -56,7 +56,6 @@ const PATTERN_ITEM: PatternListItem = {
 const PATTERN_DETAIL: PatternDetail = {
   ...PATTERN_ITEM,
   content: "Pattern content here",
-  agent_associations: [{ agent_name: "Agent One", relevance: 0.9 }],
   graph: {
     related_patterns: [
       { id: "rel-1", name: "Related", relationship: "uses", strength: 0.75 },
@@ -296,7 +295,6 @@ describe("searchPatterns", () => {
       tags: "security",
       language: "go",
       domain: "backend",
-      agent: "agent-1",
       limit: 5,
       threshold: 0.7,
     });
@@ -308,7 +306,6 @@ describe("searchPatterns", () => {
     expect(url).toContain("tags=security");
     expect(url).toContain("language=go");
     expect(url).toContain("domain=backend");
-    expect(url).toContain("agent=agent-1");
     expect(url).toContain("limit=5");
     expect(url).toContain("threshold=0.7");
   });

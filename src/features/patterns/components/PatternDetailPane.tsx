@@ -48,10 +48,7 @@ export function PatternDetailPane({
   return (
     <div className="flex h-full flex-col overflow-auto p-4">
       <PatternMetadata pattern={data} />
-      <PatternSupportSections
-        chunks={chunks}
-        agentAssociations={data.agent_associations ?? []}
-      />
+      <PatternSupportSections chunks={chunks} />
       <div className="flex flex-col gap-2">
         <h3>Related Patterns</h3>
         {(data.graph?.related_patterns ?? []).length === 0 ? (
