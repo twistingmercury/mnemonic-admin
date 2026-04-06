@@ -43,7 +43,6 @@ const MOCK_DETAIL: PatternDetail = {
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-02T00:00:00Z",
   content: "# Alpha Pattern\n\nThis is the pattern content.",
-  agent_associations: [],
   graph: { related_patterns: [], concepts: [] },
 };
 

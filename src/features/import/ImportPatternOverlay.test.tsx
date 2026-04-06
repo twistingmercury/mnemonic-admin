@@ -206,7 +206,6 @@ describe("ImportPatternOverlay", () => {
         enrichment_status: "pending",
         created_at: "",
         updated_at: "",
-        agent_associations: [],
         graph: { related_patterns: [], concepts: [] },
       });
     });
@@ -221,7 +220,6 @@ describe("ImportPatternOverlay", () => {
         enrichment_status: "pending",
         created_at: "2026-01-01T00:00:00Z",
         updated_at: "2026-01-01T00:00:00Z",
-        agent_associations: [],
         graph: { related_patterns: [], concepts: [] },
       };
       vi.mocked(client.createPattern).mockResolvedValueOnce(mockPattern);

@@ -39,7 +39,6 @@ export function PatternFilters({
             <span> language: {localFilters.language}</span>
           )}
           {localFilters.domain && <span> domain: {localFilters.domain}</span>}
-          {localFilters.agent && <span> agent: {localFilters.agent}</span>}
         </div>
       )}
       <div className="flex flex-wrap gap-1">
@@ -67,15 +66,6 @@ export function PatternFilters({
             type="text"
             value={localFilters.domain}
             onChange={(e) => handleChange("domain", e.target.value)}
-            className="w-20"
-          />
-        </label>
-        <label className="flex flex-col text-sm">
-          Agent
-          <input
-            type="text"
-            value={localFilters.agent}
-            onChange={(e) => handleChange("agent", e.target.value)}
             className="w-20"
           />
         </label>

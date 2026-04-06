@@ -1,10 +1,5 @@
 // ─── Domain models ────────────────────────────────────────────────────────────
 
-export interface AgentAssociation {
-  agent_name: string;
-  relevance: number;
-}
-
 export interface RelatedPattern {
   id: string;
   name: string;
@@ -38,7 +33,6 @@ export interface PatternDetail extends PatternListItem {
   entity_type?: string;
   enriched_at?: string;
   enrichment_error?: string | null;
-  agent_associations: AgentAssociation[];
   graph: {
     related_patterns: RelatedPattern[];
     concepts: { name: string }[];
@@ -98,7 +92,6 @@ export interface SearchParams {
   tags?: string;
   language?: string;
   domain?: string;
-  agent?: string;
 }
 
 export interface CreatePatternBody {
@@ -109,10 +102,6 @@ export interface CreatePatternBody {
   language?: string;
   domain?: string;
   entity_type?: string;
-  agent_associations?: {
-    agent_name?: string;
-    relevance: number;
-  }[];
 }
 
 // ─── Error types ──────────────────────────────────────────────────────────────

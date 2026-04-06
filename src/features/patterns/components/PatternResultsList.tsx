@@ -45,7 +45,6 @@ export function PatternResultsList({
         tags: filters.tags || undefined,
         language: filters.language || undefined,
         domain: filters.domain || undefined,
-        agent: filters.agent || undefined,
       }),
     enabled: isSearchMode,
   });
