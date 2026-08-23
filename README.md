@@ -7,11 +7,26 @@
 
 ## Table of Contents
 
-- [Usage](#usage)
-- [How it works](#how-it-works)
-- [Key Considerations](#key-considerations)
-- [Development Considerations](#development-considerations)
-- [Versioning](#versioning)
+- [mnemonic-admin](#mnemonic-admin)
+  - [Table of Contents](#table-of-contents)
+  - [Usage](#usage)
+    - [Markdown Pattern Import](#markdown-pattern-import)
+  - [How it works](#how-it-works)
+  - [Key Considerations](#key-considerations)
+    - [API Dependency](#api-dependency)
+    - [Client-Side Validation](#client-side-validation)
+    - [No Authentication](#no-authentication)
+    - [Split-Pane Layout](#split-pane-layout)
+  - [Development Considerations](#development-considerations)
+    - [Requirements](#requirements)
+    - [Quick Start](#quick-start)
+    - [Environment Configuration](#environment-configuration)
+    - [Troubleshooting](#troubleshooting)
+    - [Building \& Running](#building--running)
+    - [Testing](#testing)
+    - [Stack](#stack)
+    - [Versioning](#versioning)
+  - [Documentation](#documentation)
 
 ---
 
@@ -25,7 +40,7 @@ mnemonic-admin is an internal web UI for the Mnemonic pattern library. It provid
 - Pivot between related patterns
 - Import a single Markdown pattern file through the browser
 
-The UI connects directly to the Mnemonic API at `http://localhost:8080/v1/api`. No authentication is required in phase 1.
+The UI connects to the Mnemonic API. No authentication is required in phase 1.
 
 ### Markdown Pattern Import
 
@@ -62,7 +77,7 @@ When you search for a pattern, the UI sends the search term to the API and displ
 
 ### API Dependency
 
-The application requires the Mnemonic API to be running at `http://localhost:8080/v1/api`. Without it, the UI cannot function. For development, ensure the API is started before running the UI.
+The application requires a reachable Mnemonic API. Vite requires the `MNEMONIC_API_URL` environment variable when it starts or builds; it fails with setup guidance when the value is missing, empty, or whitespace only. The browser API client is configured separately by `VITE_API_BASE_URL`.
 
 ### Client-Side Validation
 
@@ -80,76 +95,102 @@ The primary workspace uses a fixed split-pane design. Users browse patterns on t
 
 ## Development Considerations
 
+### Requirements
+
+Before developing locally, install the following:
+
+- Node.js 24 or later (the repository pins Node 24 in `.nvmrc` and requires it in `package.json`); npm is used to install the locked dependencies.
+- A reachable Mnemonic API and values for both API variables: `MNEMONIC_API_URL` (the API origin) and `VITE_API_BASE_URL` (the browser API base URL). For local proxying, use the values shown in [Quick Start](#quick-start).
+- Docker Engine with the Docker CLI to run the canonical Docker-first build.
+
+Install [BATS](https://bats-core.readthedocs.io/) to run the build-script tests. To run the Playwright end-to-end tests, install its Chromium browser once after dependencies are installed:
+
+```bash
+npx playwright install chromium
+```
+
 ### Quick Start
 
-Ensure Node.js 18+ and Docker are installed.
+With the requirements in place, create an uncommitted `.env.local` file in the repository root:
 
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Start the Mnemonic API on `localhost:8080` (if not already running)
-4. Start the development server: `npm run dev`
-5. Open the browser to the URL shown in the terminal (usually `http://localhost:5173`)
+```dotenv
+MNEMONIC_API_URL=http://localhost:8080
+VITE_API_BASE_URL=/v1/api
+```
+
+Install dependencies and start Vite:
+
+```bash
+npm install
+npm run dev
+```
+
+Open the URL shown in the terminal, usually `http://localhost:5173`. `VITE_API_BASE_URL=/v1/api` sends browser requests through Vite's development proxy.
 
 The development server includes hot module reloading. Changes to component files, styles, and configuration files are reflected immediately.
 
 ### Environment Configuration
 
-The Vite development server automatically proxies all requests to `/v1/api` to `http://localhost:8080`. This proxy is configured in `vite.config.ts` and prevents CORS errors during development by allowing the browser to make requests that appear to come from the same origin.
+`MNEMONIC_API_URL` is required by Vite for every development or production build. Set it in the shell that invokes Vite or in `.env.local`. It must be the API origin, without `/v1/api`:
 
-The API client reads the API base URL from the `VITE_API_BASE_URL` environment variable. To use the development proxy, create a `.env.local` file in the project root (not committed to version control) and set:
-
+```dotenv
+MNEMONIC_API_URL=http://localhost:8080
 ```
+
+In development, Vite proxies `/v1/api` to that origin. The proxy only exists while Vite is running.
+
+`VITE_API_BASE_URL` is the browser client's API base URL. To use the development proxy, set it to `/v1/api`:
+
+```dotenv
 VITE_API_BASE_URL=/v1/api
 ```
 
-This routes all API requests through the Vite proxy to `http://localhost:8080`.
+To call an API directly, set it to a full API base URL instead:
 
-To bypass the proxy and hit the API directly from your local machine, set the full URL instead:
-
-```
+```dotenv
 VITE_API_BASE_URL=http://localhost:8080/v1/api
 ```
 
-However, direct requests may trigger CORS errors depending on the API's CORS configuration. The proxy-based approach (using just the path) is recommended for local development.
+Direct browser requests require the API to allow the UI origin through CORS. If `VITE_API_BASE_URL` is not supplied, the current client implementation falls back to `http://localhost:8080/v1/api`.
+
+Both Vite variables are evaluated at development-server startup or at build time; they are not runtime settings for the static production site. The Docker image serves static files with Nginx and has no Vite proxy. `build/build.sh` passes only `MNEMONIC_API_URL` into the Docker build, so it satisfies Vite's required validation but does not configure the browser client's API URL. Any CI job that runs this script must provide a non-empty `MNEMONIC_API_URL`.
 
 ### Troubleshooting
 
 **API is unreachable:**
-Verify that the Mnemonic API is running at `http://localhost:8080`. Start it before running the development server.
+Verify that `MNEMONIC_API_URL` is set to the API origin, that `VITE_API_BASE_URL` is `/v1/api` when using the proxy, and that the API is running.
 
 **CORS errors in the browser console:**
-Check that `VITE_API_BASE_URL` is set to `/v1/api` (not the full URL) in `.env.local`. This ensures requests route through the Vite dev proxy, which avoids CORS issues.
+Check that `VITE_API_BASE_URL` is set to `/v1/api` in `.env.local`. This routes requests through the Vite development proxy.
 
 **Dev server is not running:**
 Start the development server with `npm run dev` before opening the browser. The server must be running on `http://localhost:5173` (or the port shown in the terminal) for the proxy to work.
 
 ### Building & Running
 
-**Local development build:**
+**Local Vite build:**
+
 ```bash
 npm install
-npm run dev
-```
-
-**Production build:**
-```bash
-npm run build
+MNEMONIC_API_URL=http://localhost:8080 VITE_API_BASE_URL=/v1/api npm run build
 ```
 
 This generates a static build in the `dist/` directory.
 
 **Docker-first build (canonical path):**
+
 ```bash
-./build/build.sh
+MNEMONIC_API_URL=http://localhost:8080 ./build/build.sh
 ```
 
-This builds the application inside a Docker container, ensuring consistency between local and CI environments. It is the authoritative build method for releases and CI/CD.
+This builds the application inside Docker and is the canonical release and CI build path. It requires `MNEMONIC_API_URL`; see [Environment Configuration](#environment-configuration) for the current static-site API URL limitation.
 
 ### Testing
 
-The project uses three levels of testing:
+The project has unit/component, end-to-end, and build-script coverage:
 
 **Unit and component tests (Vitest + React Testing Library):**
+
 ```bash
 npm run test
 ```
@@ -157,11 +198,20 @@ npm run test
 Tests focus on parser logic, API client behavior, and component interaction. Tests run in watch mode during development and once in CI.
 
 **End-to-end tests (Playwright):**
+
 ```bash
 npm run e2e
 ```
 
 E2E tests verify critical user flows: pattern search, selection, related-pattern pivoting, and the import workflow. These tests use Playwright route interception and do not require a running Mnemonic API. The live API is only needed to run the application in development.
+
+**Build-script tests (BATS):**
+
+```bash
+bats test/build_build.bats
+```
+
+These tests verify that the Docker build wrapper rejects a missing API URL and forwards a configured value to Docker. Install [BATS](https://bats-core.readthedocs.io/) to run them locally.
 
 ### Stack
 
@@ -175,9 +225,7 @@ E2E tests verify critical user flows: pattern search, selection, related-pattern
 - **React Testing Library** — User-centric component testing
 - **Playwright** — End-to-end testing for critical workflows
 
-For rationale and rejected alternatives, see `docs/adr/0001-frontend-stack.md`.
-
-### Versioning <a name="versioning"></a>
+### Versioning
 
 This project follows [Semantic Versioning 2.0.0](https://semver.org/).
 
@@ -191,6 +239,5 @@ git describe --tags --always
 
 ## Documentation
 
-- **Architecture decisions** — `docs/adr/0001-frontend-stack.md`
-- **UI design and interactions** — `docs/design/pattern-ui-screen-map.md`
-- **Implementation plan** — `docs/plans/phase-01/PRD.md`
+- [**Architecture decisions**](https://github.com/twistingmercury/mnemonic-docs/blob/develop/docs/architecture/admin/0001-frontend-stack.md)
+- [**UI design and interactions**](https://github.com/twistingmercury/mnemonic-docs/blob/develop/docs/architecture/admin/screen-map.md)

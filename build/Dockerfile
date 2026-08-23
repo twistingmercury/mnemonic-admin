@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20.20.1-alpine AS build
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
@@ -8,11 +8,14 @@ RUN npm ci
 
 COPY index.html ./
 COPY tsconfig.json tsconfig.app.json tsconfig.node.json ./
-COPY vite.config.ts ./
+COPY vite.config.ts vitest.config.ts ./
 COPY tailwind.config.js postcss.config.js eslint.config.js ./
 COPY src ./src
 
 RUN npm run test
+
+ARG MNEMONIC_API_URL
+ENV MNEMONIC_API_URL=${MNEMONIC_API_URL}
 RUN npm run build
 
 # Final stage — serve the static dist with nginx

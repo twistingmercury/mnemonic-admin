@@ -10,6 +10,7 @@ BUILD_DATE="${BUILD_DATE:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}"
 BUILD_COMMIT="${BUILD_COMMIT:-$(git -C "${PROJECT_ROOT}" rev-parse --short HEAD 2>/dev/null || echo 'unknown')}"
 IMAGE_NAME="${IMAGE_NAME:-ghcr.io/twistingmercury/mnemonic-admin}"
 IMAGE_TAG="${IMAGE_TAG:-$BUILD_VER}"
+MNEMONIC_API_URL="${MNEMONIC_API_URL:-}"
 
 build_image() {
     printf "\n=== starting image build, version %s ===\n" "${BUILD_VER}"
@@ -19,6 +20,7 @@ build_image() {
         --build-arg BUILD_VER="${BUILD_VER}" \
         --build-arg BUILD_DATE="${BUILD_DATE}" \
         --build-arg BUILD_COMMIT="${BUILD_COMMIT}" \
+        --build-arg MNEMONIC_API_URL="${MNEMONIC_API_URL}" \
         --target final \
         --tag "${IMAGE_NAME}:${IMAGE_TAG}" \
         --tag "${IMAGE_NAME}:latest" \
@@ -29,6 +31,11 @@ build_image() {
 }
 
 main() {
+    if [[ -z "${MNEMONIC_API_URL//[[:space:]]/}" ]]; then
+        printf 'MNEMONIC_API_URL must be set and non-empty.\n' >&2
+        return 1
+    fi
+
     build_image
 }
 
